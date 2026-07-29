@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Modern - Spatial Hub</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- AOS Scroll Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active"><i data-lucide="home"></i> Home</a></li>
+            <li><a href="skills.html"><i data-lucide="code-2"></i> Skills</a></li>
+            <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
+            <li><a href="certificates.html"><i data-lucide="award"></i> Certificates</a></li>
+            <li><a href="videos.html"><i data-lucide="video"></i> Videos</a></li>
+            <li><a href="blog.html"><i data-lucide="newspaper"></i> Blog</a></li>
+        </ul>
+        <button class="custom-cursor-toggle" id="themeToggle"><i data-lucide="sun"></i></button>
+    </nav>
+
+  <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container" data-aos="fade-up">
+            
+            <!-- Kolom Kiri: Teks & Spatial Buttons -->
+            <div class="hero-content">
+                <div class="status-badge"><span class="pulse"></span> System Online & Ready</div>
+                <h1>Halo, Saya <span class="text-accent">Developer Muda</span></h1>
+                
+                <!-- Subjudul statis, animasinya kita pindah ke kotak kode -->
+                <h2 class="terminal-prompt">> <span id="typingEffect"></span><span class="blink">_</span></h2>
+                
+                <p>Mahasiswa Teknik Informatika yang berfokus pada pengembangan aplikasi web modern, UI/UX interaktif, dan integrasi AI mandiri.</p>
+                
+                <!-- Modern Canggih Buttons -->
+                <div class="hero-buttons">
+                    <a href="projects.html" class="btn-spatial btn-glow">
+                        <i data-lucide="rocket"></i>
+                        <span>Lihat Karya</span>
+                        <div class="btn-shine"></div>
+                    </a>
+                    <button class="btn-spatial btn-glass" id="openContactModalHero">
+                        <i data-lucide="terminal"></i>
+                        <span>Hubungi Saya</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Live Code Typing Card -->
+            <div class="hero-visual">
+                <div class="holo-card hero-code-card tilt-card">
+                    <div class="holo-shine"></div>
+                    <div class="code-header">
+                        <div class="window-controls">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="code-title">portfolio.config.js</span>
+                    </div>
+                    <div class="code-body">
+                        <!-- Tempat Javascript mengetik otomatis -->
+                        <pre><code id="codeTyping"></code><span id="codeCursor" class="cursor-blink">|</span></pre>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up"><i data-lucide="user-check"></i> Tentang Saya</h2>
+            <div class="about-grid">
+                <div class="about-card glass-card" data-aos="fade-right">
+                    <h3>Pendidikan & Passion</h3>
+                    <p>Saat ini sedang menempuh pendidikan perguruan tinggi. Sangat antusias mempelajari ekosistem JavaScript, arsitektur web modern, serta performa dan estetika antarmuka.</p>
+                </div>
+                <div class="about-stats" data-aos="fade-left">
+                    <div class="stat-card glass-card">
+                        <i data-lucide="folder-check"></i>
+                        <h4 class="counter" data-target="15">0</h4>
+                        <p>Proyek Selesai</p>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <i data-lucide="award"></i>
+                        <h4 class="counter" data-target="8">0</h4>
+                        <p>Sertifikat Resmi</p>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <i data-lucide="video"></i>
+                        <h4 class="counter" data-target="12">0</h4>
+                        <p>Video Kuliah</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SPATIAL HOLOGRAPHIC DECK PREVIEW -->
+    <section class="container spatial-section">
+        <div class="spatial-title" data-aos="fade-up">
+            <span class="spatial-tag"><i data-lucide="sparkles"></i> SPATIAL EXPERIENCE</span>
+            <h2>Eksplorasi Modul Karya</h2>
+        </div>
+
+        <div class="spatial-deck">
+            
+            <!-- 1. SKILLS CARD -->
+            <a href="skills.html" class="holo-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="50">
+                <div class="holo-shine"></div>
+                <div class="holo-top">
+                    <div class="holo-icon-box"><i data-lucide="code-2"></i></div>
+                    <span class="holo-num">01</span>
+                </div>
+                <div class="holo-main">
+                    <h3>Keahlian & Skills</h3>
+                    <p>JavaScript ES6+, Web Architecture, Responsive Layouts, & API Integration.</p>
+                </div>
+                <div class="holo-action">
+                    <span>Lihat Skills</span>
+                    <i data-lucide="arrow-up-right"></i>
+                </div>
+            </a>
+
+            <!-- 2. PROJECTS CARD -->
+            <a href="projects.html" class="holo-card holo-accent glass-card tilt-card" data-aos="zoom-in" data-aos-delay="100">
+                <div class="holo-shine"></div>
+                <div class="holo-top">
+                    <div class="holo-icon-box"><i data-lucide="folder-git-2"></i></div>
+                    <span class="holo-num">02</span>
+                </div>
+                <div class="holo-main">
+                    <div class="holo-badge">Highlight Proyek</div>
+                    <h3>Smart Web Dashboard</h3>
+                    <p>Aplikasi web interaktif dengan manipulasi data dan UI presisi tinggi.</p>
+                </div>
+                <div class="holo-action">
+                    <span>Lihat Projects</span>
+                    <i data-lucide="arrow-up-right"></i>
+                </div>
+            </a>
+
+            <!-- 3. CERTIFICATES CARD -->
+            <a href="certificates.html" class="holo-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="150">
+                <div class="holo-shine"></div>
+                <div class="holo-top">
+                    <div class="holo-icon-box"><i data-lucide="award"></i></div>
+                    <span class="holo-num">03</span>
+                </div>
+                <div class="holo-main">
+                    <h3>Sertifikat Resmi</h3>
+                    <p>Sertifikasi Web Developer terdaftar & kompetensi teruji.</p>
+                </div>
+                <div class="holo-action">
+                    <span>Lihat Certificate</span>
+                    <i data-lucide="arrow-up-right"></i>
+                </div>
+            </a>
+
+            <!-- 4. VIDEOS CARD -->
+            <a href="videos.html" class="holo-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="200">
+                <div class="holo-shine"></div>
+                <div class="holo-top">
+                    <div class="holo-icon-box"><i data-lucide="video"></i></div>
+                    <span class="holo-num">04</span>
+                </div>
+                <div class="holo-main">
+                    <h3>Video Presentasi</h3>
+                    <p>Rekaman presentasi tugas perkuliahan & demonstrasi aplikasi.</p>
+                </div>
+                <div class="holo-action">
+                    <span>Lihat Videos</span>
+                    <i data-lucide="arrow-up-right"></i>
+                </div>
+            </a>
+
+            <!-- 5. BLOG CARD -->
+            <a href="blog.html" class="holo-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="250">
+                <div class="holo-shine"></div>
+                <div class="holo-top">
+                    <div class="holo-icon-box"><i data-lucide="newspaper"></i></div>
+                    <span class="holo-num">05</span>
+                </div>
+                <div class="holo-main">
+                    <h3>Artikel & Blog</h3>
+                    <p>Catatan pembelajaran seputar pemrograman & eksperimen AI.</p>
+                </div>
+                <div class="holo-action">
+                    <span>Lihat Blog</span>
+                    <i data-lucide="arrow-up-right"></i>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- COMPACT TRIGGER CONTACT (VISION OS PILL BAR) -->
+        <div class="vision-trigger-wrapper" data-aos="fade-up">
+            <div class="vision-pill-bar glass-card" id="openContactModal">
+                <div class="pill-pulse"></div>
+                <div class="pill-text">
+                    <i data-lucide="mail"></i>
+                    <span>Tertarik Kolaborasi atau Punya Pertanyaan?</span>
+                </div>
+                <span class="pill-btn">Mulai Pesan <i data-lucide="chevron-right"></i></span>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- VISION OS SPATIAL MODAL (ANIMASI MEMBUKA MACOS / VISION OS WINDOW) -->
+    <div class="spatial-overlay" id="contactModal">
+        <div class="spatial-window glass-card">
+            <div class="spatial-header">
+                <div class="spatial-controls">
+                    <button class="spatial-close" id="closeContactModal"><i data-lucide="x"></i></button>
+                </div>
+                <span class="spatial-title"><i data-lucide="message-square"></i> Hubungi Saya</span>
+            </div>
+            <div class="spatial-body">
+                <form id="contactForm" novalidate>
+                    <div class="form-group">
+                        <label for="name"><i data-lucide="user"></i> Nama Lengkap</label>
+                        <input type="text" id="name" name="name" placeholder="Masukkan nama Anda">
+                        <small class="error-msg" id="nameError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="email"><i data-lucide="at-sign"></i> Email</label>
+                        <input type="email" id="email" name="email" placeholder="contoh@email.com">
+                        <small class="error-msg" id="emailError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject"><i data-lucide="bookmark"></i> Subjek</label>
+                        <input type="text" id="subject" name="subject" placeholder="Subjek atau topik">
+                        <small class="error-msg" id="subjectError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="message"><i data-lucide="message-square"></i> Pesan</label>
+                        <textarea id="message" name="message" rows="4" placeholder="Tuliskan pesan Anda..."></textarea>
+                        <small class="error-msg" id="messageError"></small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                        <i data-lucide="send"></i> Kirim Pesan Now
+                    </button>
+                    <div id="formAlert" class="form-alert"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating AI Widget Placeholder -->
+    <div id="aiWidgetContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ai-assistant.js"></script>
+</body>
+</html>

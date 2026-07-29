@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills - Web Portfolio</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html"><i data-lucide="home"></i> Home & About</a></li>
+            <li><a href="skills.html" class="active"><i data-lucide="code-2"></i> Skills</a></li>
+            <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
+            <li><a href="certificates.html"><i data-lucide="award"></i> Certificates</a></li>
+            <li><a href="videos.html"><i data-lucide="video"></i> Videos</a></li>
+            <li><a href="blog.html"><i data-lucide="newspaper"></i> Blog</a></li>
+        </ul>
+    </nav>
+
+    <main class="page-container container">
+        <h1 class="page-title" data-aos="fade-down"><i data-lucide="cpu"></i> Keahlian & Tech Stack</h1>
+        
+        <div class="skills-grid">
+            <div class="skill-card glass-card tilt-card" data-aos="zoom-in">
+                <i data-lucide="file-code-2" class="skill-icon"></i>
+                <h3>HTML5 & CSS3</h3>
+                <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+                <span class="skill-percent">95%</span>
+            </div>
+            <div class="skill-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="100">
+                <i data-lucide="braces" class="skill-icon"></i>
+                <h3>JavaScript (ES6+)</h3>
+                <div class="progress-bar"><div class="progress" style="width: 88%;"></div></div>
+                <span class="skill-percent">88%</span>
+            </div>
+            <div class="skill-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="200">
+                <i data-lucide="layout" class="skill-icon"></i>
+                <h3>Responsive Design</h3>
+                <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+                <span class="skill-percent">90%</span>
+            </div>
+            <div class="skill-card glass-card tilt-card" data-aos="zoom-in" data-aos-delay="300">
+                <i data-lucide="git-branch" class="skill-icon"></i>
+                <h3>Git & GitHub</h3>
+                <div class="progress-bar"><div class="progress" style="width: 82%;"></div></div>
+                <span class="skill-percent">82%</span>
+            </div>
+        </div>
+    </main>
+
+    <div id="aiWidgetContainer"></div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ai-assistant.js"></script>
+</body>
+</html>

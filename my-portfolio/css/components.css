@@ -1,0 +1,693 @@
+/* ==========================================================================
+   COMPONENTS CSS — SPATIAL HOLOGRAPHIC & VISION OS THEME
+   Synced directly with index.html Spatial Hub Architecture
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. HERO SECTION & SPLIT LAYOUT
+   -------------------------------------------------------------------------- */
+.hero-section {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 60px 20px;
+    position: relative;
+}
+
+.hero-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.hero-content {
+    text-align: left;
+    max-width: 800px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 16px;
+    border-radius: 30px;
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+}
+
+.pulse {
+    width: 8px;
+    height: 8px;
+    background-color: #00e676;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00e676;
+    animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.terminal-prompt {
+    font-family: 'Fira Code', monospace, sans-serif;
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 25px;
+}
+
+.blink {
+    animation: blinkCursor 1s step-end infinite;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 620px;
+    margin: 0 0 35px 0;
+    line-height: 1.6;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. HERO BUTTONS (SPATIAL & MODERN)
+   -------------------------------------------------------------------------- */
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.btn-spatial {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+}
+
+/* Primary Button (Glow / Neon Holographic) */
+.btn-glow {
+    background: rgba(0, 242, 254, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+}
+
+.btn-glow:hover {
+    background: rgba(0, 242, 254, 0.2);
+    box-shadow: 0 0 35px rgba(0, 242, 254, 0.4);
+    transform: translateY(-4px);
+}
+
+/* Secondary Button (Frosted Glass) */
+.btn-glass {
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px);
+}
+
+/* Button Shine Sweep Effect */
+.btn-shine {
+    position: absolute;
+    top: 0; 
+    left: -100%;
+    width: 50%; 
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+}
+
+.btn-glow:hover .btn-shine {
+    left: 200%;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. LIVE CODE TYPING CARD (HERO VISUAL)
+   -------------------------------------------------------------------------- */
+.hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-code-card {
+    width: 100%;
+    max-width: 460px;
+    background: rgba(10, 15, 30, 0.85);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 15px;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.dot.red { background: #ff5f56; box-shadow: 0 0 5px #ff5f56; }
+.dot.yellow { background: #ffbd2e; box-shadow: 0 0 5px #ffbd2e; }
+.dot.green { background: #27c93f; box-shadow: 0 0 5px #27c93f; }
+
+.code-title {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-family: monospace;
+}
+
+.code-body {
+    font-family: 'Fira Code', Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    overflow-x: auto;
+}
+
+.code-body pre {
+    margin: 0;
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+.cursor-blink {
+    color: var(--primary-color);
+    animation: blinkCursor 1s step-end infinite;
+    font-weight: bold;
+}
+
+@keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Syntax Highlighting Color Scheme */
+.syntax-keyword { color: #c678dd; }  /* Purple */
+.syntax-string { color: #98c379; }   /* Green */
+.syntax-property { color: #61afef; } /* Blue */
+.syntax-bracket { color: #e5c07b; }  /* Yellow */
+
+
+/* --------------------------------------------------------------------------
+   4. ABOUT SECTION & GLASS CARDS
+   -------------------------------------------------------------------------- */
+.about-section {
+    padding: 80px 0;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.about-card {
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.about-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: var(--primary-color);
+}
+
+.about-card p {
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stat-card {
+    padding: 20px 15px;
+    text-align: center;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card i {
+    width: 28px;
+    height: 28px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.stat-card h4 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.stat-card p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+
+/* --------------------------------------------------------------------------
+   5. SPATIAL HOLOGRAPHIC DECK
+   -------------------------------------------------------------------------- */
+.spatial-section {
+    padding: 60px 0 100px 0;
+}
+
+.spatial-title {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.spatial-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--primary-color);
+    background: rgba(0, 242, 254, 0.1);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.spatial-title h2 {
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+}
+
+.spatial-deck {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+/* Holographic Card Item */
+.holo-card {
+    position: relative;
+    padding: 28px;
+    border-radius: 22px;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.holo-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 35px rgba(0, 242, 254, 0.15);
+}
+
+.holo-accent {
+    border-color: rgba(0, 242, 254, 0.3);
+    background: linear-gradient(135deg, rgba(0, 242, 254, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+.holo-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    transform: skewX(-25deg);
+    transition: left 0.75s ease;
+}
+
+.holo-card:hover .holo-shine {
+    left: 200%;
+}
+
+.holo-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.holo-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+}
+
+.holo-icon-box i {
+    width: 22px;
+    height: 22px;
+}
+
+.holo-num {
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: var(--text-dim);
+    font-weight: 600;
+}
+
+.holo-main h3 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.holo-main p {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+}
+
+.holo-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(0, 242, 254, 0.15);
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.holo-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    transition: gap 0.2s ease;
+}
+
+.holo-card:hover .holo-action i {
+    transform: translate(3px, -3px);
+    transition: transform 0.2s ease;
+}
+
+
+/* --------------------------------------------------------------------------
+   6. VISION OS PILL BAR (TRIGGER CONTACT)
+   -------------------------------------------------------------------------- */
+.vision-trigger-wrapper {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.vision-pill-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 14px 28px;
+    border-radius: 980px;
+    cursor: pointer;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vision-pill-bar:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(0, 242, 254, 0.2);
+}
+
+.pill-pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+    animation: pulseGlow 2s infinite;
+}
+
+.pill-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.pill-text i {
+    width: 18px;
+    height: 18px;
+    color: var(--primary-color);
+}
+
+.pill-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f172a;
+    background: #ffffff;
+    padding: 8px 18px;
+    border-radius: 30px;
+}
+
+
+/* --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
+   5. SPATIAL VISION OS MODAL WINDOW (macOS App Launch Style)
+   -------------------------------------------------------------------------- */
+.spatial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* State tertutup */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+                visibility 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spatial-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.spatial-window {
+    width: 90%;
+    max-width: 500px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(15, 23, 42, 0.88);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
+                0 0 40px rgba(0, 242, 254, 0.15);
+    
+    /* State Tertutup: Menguncup mengecil dan agak gepeng ala App macOS */
+    transform: scale(0.08) translateY(100px);
+    opacity: 0;
+    filter: blur(12px);
+    
+    /* Transition super smooth khas macOS */
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.35s ease-out, 
+                filter 0.35s ease-out;
+    will-change: transform, opacity, filter, transform-origin;
+}
+
+.spatial-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spatial-controls {
+    display: flex;
+    align-items: center;
+}
+
+.spatial-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-dim);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spatial-close:hover {
+    background: rgba(255, 95, 86, 0.9);
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.spatial-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spatial-title i {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+}
+
+.spatial-body {
+    padding: 25px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* State Terbuka: Mengembang penuh ke layar */
+.spatial-overlay.active .spatial-window {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    filter: blur(0px);
+}
+
+
+/* --------------------------------------------------------------------------
+   8. RESPONSIVE BREAKPOINTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-content p {
+        margin: 0 auto 35px auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .about-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .vision-pill-bar {
+        flex-direction: column;
+        text-align: center;
+        border-radius: 20px;
+        gap: 15px;
+    }
+
+    .pill-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

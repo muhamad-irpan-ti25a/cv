@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Web Portfolio</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html"><i data-lucide="home"></i> Home & About</a></li>
+            <li><a href="skills.html"><i data-lucide="code-2"></i> Skills</a></li>
+            <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
+            <li><a href="certificates.html"><i data-lucide="award"></i> Certificates</a></li>
+            <li><a href="videos.html"><i data-lucide="video"></i> Videos</a></li>
+            <li><a href="blog.html" class="active"><i data-lucide="newspaper"></i> Blog</a></li>
+        </ul>
+    </nav>
+
+    <main class="page-container container">
+        <h1 class="page-title" data-aos="fade-down"><i data-lucide="newspaper"></i> Catatan & Artikel Blog</h1>
+
+        <div class="blog-grid">
+            <article class="blog-card glass-card tilt-card" data-aos="fade-up">
+                <span class="blog-date">28 Juli 2026</span>
+                <h3>Membuat AI Assistant Mandiri Tanpa API Key di JavaScript</h3>
+                <p>Panduan praktis membangun algoritma pemrosesan teks lokal sederhana untuk portofolio interaktif.</p>
+                <a href="#" class="read-more">Baca Selengkapnya <i data-lucide="arrow-right"></i></a>
+            </article>
+        </div>
+    </main>
+
+    <div id="aiWidgetContainer"></div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ai-assistant.js"></script>
+</body>
+</html>
