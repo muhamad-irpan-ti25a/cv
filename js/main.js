@@ -1,322 +1,1169 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Initializer Icon & External Libraries
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
+    "use strict";
 
-    if (typeof AOS !== 'undefined') {
-        AOS.init({ duration: 800, once: true });
-    }
+    /* ============================================================
+       PORTFOLIO MAIN.JS
+       ============================================================ */
 
-    if (typeof VanillaTilt !== 'undefined') {
-        VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
-            max: 15,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.2
+    /* ============================================================
+       1. INITIALIZE LIBRARIES
+       ============================================================ */
+
+    // Lucide Icons
+    const refreshIcons = () => {
+        if (typeof lucide !== "undefined") {
+            lucide.createIcons();
+        }
+    };
+
+    refreshIcons();
+
+    // AOS
+    if (typeof AOS !== "undefined") {
+        AOS.init({
+            duration: 800,
+            easing: "ease-out-cubic",
+            once: true,
+            offset: 80
         });
     }
 
-    // 2. EFEK MENGETIK UNTUK SUBTITLE JUDUL KIRI (> Web & AI Developer_)
-    const typingElement = document.getElementById("typingEffect");
-    if (typingElement) {
-        // Kata-kata yang akan diketik secara bergantian
-        const words = ["Web & AI Developer", "UI/UX Designer", "Tech Enthusiast"];
-        let wordIdx = 0;
-        let charIdx = 0;
-        let isDeleting = false;
+    // Vanilla Tilt
+    if (typeof VanillaTilt !== "undefined") {
+        const tiltCards = document.querySelectorAll(".tilt-card");
 
-        function typeSubtitle() {
-            const currentWord = words[wordIdx];
-            
-            if (isDeleting) {
-                typingElement.textContent = currentWord.substring(0, charIdx - 1);
-                charIdx--;
-            } else {
-                typingElement.textContent = currentWord.substring(0, charIdx + 1);
-                charIdx++;
-            }
-
-            // Kecepatan mengetik & menghapus
-            let typeSpeed = isDeleting ? 40 : 80;
-
-            // Jeda waktu saat kata selesai diketik lengkap agar bisa dibaca
-            if (!isDeleting && charIdx === currentWord.length) {
-                typeSpeed = 2200; // Jeda 2.2 detik
-                isDeleting = true;
-            } else if (isDeleting && charIdx === 0) {
-                isDeleting = false;
-                wordIdx = (wordIdx + 1) % words.length;
-                typeSpeed = 400; // Jeda sebelum mengetik kata baru
-            }
-
-            setTimeout(typeSubtitle, typeSpeed);
+        if (tiltCards.length) {
+            VanillaTilt.init(tiltCards, {
+                max: 12,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.2,
+                gyroscope: false
+            });
         }
-
-        // Jalankan langsung dengan sedikit delay 300ms
-        setTimeout(typeSubtitle, 300);
     }
 
-    // 3. LIVE CODE TYPING WITH INSTANT REAL-TIME VS CODE COLORING (SEBELAH KANAN)
-    const codeElement = document.getElementById("codeTyping");
-    if (codeElement) {
-        const codeTokens = [
-            { text: "const ", class: "syntax-keyword" },
-            { text: "developer", class: "syntax-property" },
-            { text: " = {\n  ", class: "" },
-            { text: "name", class: "syntax-property" },
-            { text: ': "', class: "" },
-            { text: "Developer Muda", class: "syntax-string" },
-            { text: '",\n  ', class: "" },
-            { text: "skills", class: "syntax-property" },
-            { text: ': [', class: "" },
-            { text: '"React"', class: "syntax-string" },
-            { text: ", ", class: "" },
-            { text: '"AI"', class: "syntax-string" },
-            { text: ", ", class: "" },
-            { text: '"UI/UX"', class: "syntax-string" },
-            { text: '],\n  ', class: "" },
-            { text: "status", class: "syntax-property" },
-            { text: ': "', class: "" },
-            { text: "Ready to Build", class: "syntax-string" },
-            { text: '",\n  ', class: "" },
-            { text: "execute", class: "syntax-property" },
-            { text: ": () ", class: "" },
-            { text: "=> ", class: "syntax-keyword" },
-            { text: "launchPortfolio", class: "syntax-property" },
-            { text: "()\n};", class: "" }
+
+    /* ============================================================
+       2. TYPING EFFECT
+       ============================================================ */
+
+    const typingElement = document.getElementById("typingEffect");
+
+    if (typingElement) {
+        const words = [
+            "Web & AI Developer",
+            "UI/UX Designer",
+            "Tech Enthusiast"
         ];
 
-        let tokenIdx = 0;
-        let charInTokenIdx = 0;
+        let wordIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
+
+        const typeText = () => {
+            const currentWord = words[wordIndex];
+
+            if (!deleting) {
+                charIndex++;
+            } else {
+                charIndex--;
+            }
+
+            typingElement.textContent =
+                currentWord.substring(0, charIndex);
+
+            let speed = deleting ? 45 : 80;
+
+            // Selesai mengetik
+            if (!deleting && charIndex === currentWord.length) {
+                speed = 1800;
+                deleting = true;
+            }
+
+            // Selesai menghapus
+            if (deleting && charIndex === 0) {
+                deleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                speed = 400;
+            }
+
+            setTimeout(typeText, speed);
+        };
+
+        setTimeout(typeText, 500);
+    }
+
+
+    /* ============================================================
+       3. LIVE CODE TYPING
+       ============================================================ */
+
+    const codeElement = document.getElementById("codeTyping");
+
+    if (codeElement) {
+        const codeTokens = [
+            {
+                text: "const ",
+                className: "syntax-keyword"
+            },
+            {
+                text: "developer",
+                className: "syntax-property"
+            },
+            {
+                text: " = {\n  ",
+                className: ""
+            },
+            {
+                text: "name",
+                className: "syntax-property"
+            },
+            {
+                text: ': "',
+                className: ""
+            },
+            {
+                text: "Developer Muda",
+                className: "syntax-string"
+            },
+            {
+                text: '",\n  ',
+                className: ""
+            },
+            {
+                text: "skills",
+                className: "syntax-property"
+            },
+            {
+                text: ": [",
+                className: ""
+            },
+            {
+                text: '"React"',
+                className: "syntax-string"
+            },
+            {
+                text: ", ",
+                className: ""
+            },
+            {
+                text: '"AI"',
+                className: "syntax-string"
+            },
+            {
+                text: ", ",
+                className: ""
+            },
+            {
+                text: '"UI/UX"',
+                className: "syntax-string"
+            },
+            {
+                text: "],\n  ",
+                className: ""
+            },
+            {
+                text: "status",
+                className: "syntax-property"
+            },
+            {
+                text: ': "',
+                className: ""
+            },
+            {
+                text: "Ready to Build",
+                className: "syntax-string"
+            },
+            {
+                text: '",\n  ',
+                className: ""
+            },
+            {
+                text: "execute",
+                className: "syntax-property"
+            },
+            {
+                text: ": () ",
+                className: ""
+            },
+            {
+                text: "=> ",
+                className: "syntax-keyword"
+            },
+            {
+                text: "launchPortfolio",
+                className: "syntax-property"
+            },
+            {
+                text: "()\n};",
+                className: ""
+            }
+        ];
+
+        let tokenIndex = 0;
+        let charIndex = 0;
         let currentSpan = null;
 
-        function typeRealtimeCode() {
-            if (tokenIdx < codeTokens.length) {
-                const currentToken = codeTokens[tokenIdx];
-
-                if (charInTokenIdx === 0) {
-                    if (currentToken.class) {
-                        currentSpan = document.createElement("span");
-                        currentSpan.className = currentToken.class;
-                        codeElement.appendChild(currentSpan);
-                    } else {
-                        currentSpan = null;
-                    }
-                }
-
-                const charToAppend = currentToken.text.charAt(charInTokenIdx);
-                
-                if (currentSpan) {
-                    currentSpan.textContent += charToAppend;
-                } else {
-                    codeElement.appendChild(document.createTextNode(charToAppend));
-                }
-
-                charInTokenIdx++;
-
-                if (charInTokenIdx >= currentToken.text.length) {
-                    tokenIdx++;
-                    charInTokenIdx = 0;
-                }
-
-                let speed = Math.floor(Math.random() * 20) + 25;
-                setTimeout(typeRealtimeCode, speed);
+        const typeCode = () => {
+            if (tokenIndex >= codeTokens.length) {
+                return;
             }
-        }
 
-        setTimeout(typeRealtimeCode, 800);
+            const token = codeTokens[tokenIndex];
+
+            // Token baru
+            if (charIndex === 0) {
+                if (token.className) {
+                    currentSpan = document.createElement("span");
+                    currentSpan.className = token.className;
+
+                    codeElement.appendChild(currentSpan);
+                } else {
+                    currentSpan = null;
+                }
+            }
+
+            const character = token.text.charAt(charIndex);
+
+            if (currentSpan) {
+                currentSpan.textContent += character;
+            } else {
+                codeElement.appendChild(
+                    document.createTextNode(character)
+                );
+            }
+
+            charIndex++;
+
+            // Token selesai
+            if (charIndex >= token.text.length) {
+                tokenIndex++;
+                charIndex = 0;
+            }
+
+            const speed =
+                Math.floor(Math.random() * 25) + 25;
+
+            setTimeout(typeCode, speed);
+        };
+
+        setTimeout(typeCode, 800);
     }
 
-    // 4. ANIMATED COUNTER
-    const counters = document.querySelectorAll(".counter");
-    counters.forEach(counter => {
-        const updateCount = () => {
-            const target = +counter.getAttribute("data-target");
-            const count = +counter.innerText;
-            const inc = target / 50;
 
-            if (count < target) {
-                counter.innerText = Math.ceil(count + inc);
-                setTimeout(updateCount, 40);
+    /* ============================================================
+       4. ANIMATED COUNTER
+       ============================================================ */
+
+    const counters = document.querySelectorAll(".counter");
+
+    const animateCounter = (counter) => {
+        const target = Number(
+            counter.dataset.target
+        );
+
+        if (!Number.isFinite(target)) {
+            return;
+        }
+
+        const duration = 1200;
+        const start = performance.now();
+
+        const update = (currentTime) => {
+            const progress = Math.min(
+                (currentTime - start) / duration,
+                1
+            );
+
+            const value = Math.floor(
+                progress * target
+            );
+
+            counter.textContent = value;
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
             } else {
-                counter.innerText = target;
+                counter.textContent = target;
             }
         };
-        updateCount();
-    });
 
-    // 5. PARTICLE CANVAS BACKGROUND
+        requestAnimationFrame(update);
+    };
+
+    if (counters.length) {
+        counters.forEach(animateCounter);
+    }
+
+
+    /* ============================================================
+       5. PARTICLE BACKGROUND
+       ============================================================ */
+
     const canvas = document.getElementById("particleCanvas");
+
     if (canvas) {
         const ctx = canvas.getContext("2d");
-        
-        const resizeCanvas = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        };
-        resizeCanvas();
-        window.addEventListener("resize", resizeCanvas);
 
-        let particles = [];
-        for (let i = 0; i < 40; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 2 + 1,
-                dx: (Math.random() - 0.5) * 0.5,
-                dy: (Math.random() - 0.5) * 0.5
-            });
-        }
+        if (ctx) {
+            let particles = [];
+            let animationFrame = null;
 
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "rgba(0, 242, 254, 0.4)";
+            const getParticleCount = () => {
+                if (window.innerWidth <= 600) {
+                    return 18;
+                }
 
-            particles.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fill();
+                if (window.innerWidth <= 900) {
+                    return 28;
+                }
 
-                p.x += p.dx;
-                p.y += p.dy;
+                return 40;
+            };
 
-                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-            });
-        }
-        animate();
-    }
-
-    // Event Submit Form via Fonnte API
-        contactForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            let isValid = true;
-
-            // Validasi Sederhana
-            if (nameInput.value.trim().length < 3) {
-                showError(nameInput, document.getElementById("nameError"), "Nama minimal 3 karakter!");
-                isValid = false;
-            } else {
-                clearError(nameInput, document.getElementById("nameError"));
-            }
-
-            if (!isValidEmail(emailInput.value.trim())) {
-                showError(emailInput, document.getElementById("emailError"), "Format email tidak valid!");
-                isValid = false;
-            } else {
-                clearError(emailInput, document.getElementById("emailError"));
-            }
-
-            if (messageInput.value.trim().length < 10) {
-                showError(messageInput, document.getElementById("messageError"), "Pesan minimal 10 karakter!");
-                isValid = false;
-            } else {
-                clearError(messageInput, document.getElementById("messageError"));
-            }
-
-            // Jika Semua Field Valid -> Kirim ke Fonnte
-            if (isValid) {
-                const submitBtn = document.getElementById("submitBtn");
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<i data-lucide="loader"></i> Mengirim...`;
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-
-                // 1. Data Fonnte
-                const FONNTE_TOKEN = "1nqujfT3A5hT71idmaEK"; // Masukkan API Token dari Fonnte
-                const TARGET_NO_HP = "085121046062"; // Masukkan nomor WhatsApp kamu (misal: 0812... / 62812...)
-
-                // 2. Format Teks Pesan WhatsApp
-                const textMessage = `*PESAN BARU DARI PORTOFOLIO!* 🚀\n\n` +
-                                    `👤 *Nama:* ${nameInput.value.trim()}\n` +
-                                    `✉️ *Email:* ${emailInput.value.trim()}\n` +
-                                    `📌 *Subjek:* ${subjectInput.value.trim()}\n\n` +
-                                    `💬 *Pesan:* \n"${messageInput.value.trim()}"`;
-
-                // 3. Payload Request
-                const formData = new FormData();
-                formData.append('target', TARGET_NO_HP);
-                formData.append('message', textMessage);
-
-                // 4. Kirim Request ke API Fonnte
-                fetch('https://api.fonnte.com/send', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': FONNTE_TOKEN
+            const createParticles = () => {
+                particles = Array.from(
+                    {
+                        length: getParticleCount()
                     },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status) {
-                        formAlert.className = "form-alert success";
-                        formAlert.innerText = "Pesan berhasil terkirim langsung ke WhatsApp!";
-                        contactForm.reset();
-                    } else {
-                        formAlert.className = "form-alert invalid";
-                        formAlert.innerText = "Gagal mengirim pesan: " + (data.reason || "Terjadi kesalahan.");
+                    () => ({
+                        x: Math.random() * window.innerWidth,
+                        y: Math.random() * window.innerHeight,
+                        radius: Math.random() * 1.5 + 0.5,
+                        dx: (Math.random() - 0.5) * 0.5,
+                        dy: (Math.random() - 0.5) * 0.5
+                    })
+                );
+            };
+
+            const resizeCanvas = () => {
+                const ratio = Math.min(
+                    window.devicePixelRatio || 1,
+                    2
+                );
+
+                canvas.width =
+                    window.innerWidth * ratio;
+
+                canvas.height =
+                    window.innerHeight * ratio;
+
+                canvas.style.width =
+                    `${window.innerWidth}px`;
+
+                canvas.style.height =
+                    `${window.innerHeight}px`;
+
+                ctx.setTransform(
+                    ratio,
+                    0,
+                    0,
+                    ratio,
+                    0,
+                    0
+                );
+
+                createParticles();
+            };
+
+            const animateParticles = () => {
+                ctx.clearRect(
+                    0,
+                    0,
+                    window.innerWidth,
+                    window.innerHeight
+                );
+
+                ctx.fillStyle =
+                    "rgba(0, 242, 254, 0.4)";
+
+                particles.forEach((particle) => {
+                    ctx.beginPath();
+
+                    ctx.arc(
+                        particle.x,
+                        particle.y,
+                        particle.radius,
+                        0,
+                        Math.PI * 2
+                    );
+
+                    ctx.fill();
+
+                    particle.x += particle.dx;
+                    particle.y += particle.dy;
+
+                    if (
+                        particle.x < 0 ||
+                        particle.x > window.innerWidth
+                    ) {
+                        particle.dx *= -1;
                     }
-                })
-                .catch(error => {
-                    formAlert.className = "form-alert invalid";
-                    formAlert.innerText = "Terjadi kesalahan koneksi saat menghubungi server Fonnte.";
-                    console.error("Error Fonnte:", error);
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<i data-lucide="send"></i> Kirim Pesan`;
-                    if (typeof lucide !== 'undefined') lucide.createIcons();
 
-                    // Sembunyikan notifikasi setelah 5 detik
-                    setTimeout(() => {
-                        formAlert.className = "form-alert";
-                        formAlert.innerText = "";
-                    }, 5000);
+                    if (
+                        particle.y < 0 ||
+                        particle.y > window.innerHeight
+                    ) {
+                        particle.dy *= -1;
+                    }
                 });
-            }
-        });
 
-    // 7. MODAL CONTACT TRIGGER (macOS Dynamic Origin App Launching)
-    const contactModal = document.getElementById("contactModal");
-    const spatialWindow = contactModal ? contactModal.querySelector(".spatial-window") : null;
-    const closeContactModal = document.getElementById("closeContactModal");
-    const openContactModal = document.getElementById("openContactModal");
-    const openContactModalHero = document.getElementById("openContactModalHero");
+                animationFrame =
+                    requestAnimationFrame(
+                        animateParticles
+                    );
+            };
 
-    // Fungsi menghitung titik ciut (transform-origin) dari tombol yang diklik
-    const showModal = (e) => {
-        if (contactModal && spatialWindow) {
-            if (e && e.currentTarget) {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const clickX = rect.left + rect.width / 2;
-                const clickY = rect.top + rect.height / 2;
-                
-                // Set titik tumpu animasi mengecil tepat di posisi tombol
-                spatialWindow.style.transformOrigin = `${clickX}px ${clickY}px`;
-            } else {
-                spatialWindow.style.transformOrigin = "center center";
-            }
+            resizeCanvas();
+            animateParticles();
 
-            contactModal.classList.add("active");
+            let resizeTimeout;
+
+            window.addEventListener(
+                "resize",
+                () => {
+                    clearTimeout(resizeTimeout);
+
+                    resizeTimeout = setTimeout(
+                        resizeCanvas,
+                        150
+                    );
+                }
+            );
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
+                    if (document.hidden) {
+                        if (animationFrame) {
+                            cancelAnimationFrame(
+                                animationFrame
+                            );
+
+                            animationFrame = null;
+                        }
+                    } else if (!animationFrame) {
+                        animateParticles();
+                    }
+                }
+            );
         }
-    };
-
-    const hideModal = () => {
-        if (contactModal) {
-            contactModal.classList.remove("active");
-        }
-    };
-
-    if (openContactModal) openContactModal.addEventListener("click", showModal);
-    if (openContactModalHero) openContactModalHero.addEventListener("click", showModal);
-    if (closeContactModal) closeContactModal.addEventListener("click", hideModal);
-
-    if (contactModal) {
-        contactModal.addEventListener("click", (e) => {
-            if (e.target === contactModal) {
-                hideModal();
-            }
-        });
     }
+
+
+    /* ============================================================
+       6. CONTACT MODAL
+       ============================================================ */
+
+    const contactModal =
+        document.getElementById("contactModal");
+
+    const spatialWindow =
+        contactModal?.querySelector(
+            ".spatial-window"
+        );
+
+    const openContactModal =
+        document.getElementById(
+            "openContactModal"
+        );
+
+    const openContactModalHero =
+        document.getElementById(
+            "openContactModalHero"
+        );
+
+    const closeContactModal =
+        document.getElementById(
+            "closeContactModal"
+        );
+
+    const showContactModal = (event) => {
+        if (!contactModal || !spatialWindow) {
+            return;
+        }
+
+        // Menentukan titik awal animasi
+        if (event?.currentTarget) {
+            const rect =
+                event.currentTarget
+                    .getBoundingClientRect();
+
+            const originX =
+                rect.left + rect.width / 2;
+
+            const originY =
+                rect.top + rect.height / 2;
+
+            spatialWindow.style.transformOrigin =
+                `${originX}px ${originY}px`;
+        } else {
+            spatialWindow.style.transformOrigin =
+                "center center";
+        }
+
+        contactModal.classList.add("active");
+        document.body.classList.add("modal-open");
+
+        // Fokus ke input nama
+        const nameInput =
+            document.getElementById("name");
+
+        setTimeout(() => {
+            nameInput?.focus();
+        }, 300);
+    };
+
+    const hideContactModal = () => {
+        if (!contactModal) {
+            return;
+        }
+
+        contactModal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+    };
+
+    openContactModal?.addEventListener(
+        "click",
+        showContactModal
+    );
+
+    openContactModalHero?.addEventListener(
+        "click",
+        showContactModal
+    );
+
+    closeContactModal?.addEventListener(
+        "click",
+        hideContactModal
+    );
+
+    // Klik area luar modal
+    contactModal?.addEventListener(
+        "click",
+        (event) => {
+            if (event.target === contactModal) {
+                hideContactModal();
+            }
+        }
+    );
+
+
+    /* ============================================================
+       7. CONTACT FORM
+       ============================================================ */
+
+    const contactForm =
+        document.getElementById("contactForm");
+
+    if (contactForm) {
+        const nameInput =
+            document.getElementById("name");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const subjectInput =
+            document.getElementById("subject");
+
+        const messageInput =
+            document.getElementById("message");
+
+        const submitButton =
+            document.getElementById("submitBtn");
+
+        const formAlert =
+            document.getElementById("formAlert");
+
+        const nameError =
+            document.getElementById("nameError");
+
+        const emailError =
+            document.getElementById("emailError");
+
+        const subjectError =
+            document.getElementById("subjectError");
+
+        const messageError =
+            document.getElementById("messageError");
+
+
+        /*
+         * GANTI DENGAN NOMOR WHATSAPP KAMU
+         *
+         * Contoh:
+         * 6281234567890
+         */
+
+        const WHATSAPP_NUMBER =
+            "628XXXXXXXXXX";
+
+
+        /* -----------------------------
+           Helper
+        ----------------------------- */
+
+        const isValidEmail = (email) => {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                .test(email);
+        };
+
+        const showError = (
+            input,
+            errorElement,
+            message
+        ) => {
+            input?.classList.add("invalid");
+
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+        };
+
+        const clearError = (
+            input,
+            errorElement
+        ) => {
+            input?.classList.remove("invalid");
+
+            if (errorElement) {
+                errorElement.textContent = "";
+            }
+        };
+
+        const showAlert = (
+            type,
+            message
+        ) => {
+            if (!formAlert) {
+                return;
+            }
+
+            formAlert.className =
+                `form-alert ${type}`;
+
+            formAlert.textContent =
+                message;
+        };
+
+
+        /* -----------------------------
+           Submit Form
+        ----------------------------- */
+
+        contactForm.addEventListener(
+            "submit",
+            (event) => {
+                event.preventDefault();
+
+                const name =
+                    nameInput?.value.trim() || "";
+
+                const email =
+                    emailInput?.value.trim() || "";
+
+                const subject =
+                    subjectInput?.value.trim() || "";
+
+                const message =
+                    messageInput?.value.trim() || "";
+
+                let valid = true;
+
+
+                /* Name */
+
+                if (name.length < 3) {
+                    showError(
+                        nameInput,
+                        nameError,
+                        "Nama minimal 3 karakter."
+                    );
+
+                    valid = false;
+                } else {
+                    clearError(
+                        nameInput,
+                        nameError
+                    );
+                }
+
+
+                /* Email */
+
+                if (!isValidEmail(email)) {
+                    showError(
+                        emailInput,
+                        emailError,
+                        "Format email tidak valid."
+                    );
+
+                    valid = false;
+                } else {
+                    clearError(
+                        emailInput,
+                        emailError
+                    );
+                }
+
+
+                /* Subject */
+
+                if (subject.length > 0) {
+                    clearError(
+                        subjectInput,
+                        subjectError
+                    );
+                }
+
+
+                /* Message */
+
+                if (message.length < 10) {
+                    showError(
+                        messageInput,
+                        messageError,
+                        "Pesan minimal 10 karakter."
+                    );
+
+                    valid = false;
+                } else {
+                    clearError(
+                        messageInput,
+                        messageError
+                    );
+                }
+
+
+                /* Stop */
+
+                if (!valid) {
+                    showAlert(
+                        "error",
+                        "Periksa kembali data yang kamu masukkan."
+                    );
+
+                    return;
+                }
+
+
+                /* WhatsApp */
+
+                if (
+                    !WHATSAPP_NUMBER ||
+                    WHATSAPP_NUMBER.includes(
+                        "XXXXXXXXXX"
+                    )
+                ) {
+                    showAlert(
+                        "error",
+                        "Nomor WhatsApp belum dikonfigurasi."
+                    );
+
+                    return;
+                }
+
+
+                const textMessage =
+                    `*PESAN DARI PORTFOLIO* 🚀\n\n` +
+                    `👤 Nama: ${name}\n` +
+                    `✉️ Email: ${email}\n` +
+                    `📌 Subjek: ${subject || "-"}\n\n` +
+                    `💬 Pesan:\n${message}`;
+
+
+                const whatsappURL =
+                    `https://wa.me/${WHATSAPP_NUMBER}` +
+                    `?text=${encodeURIComponent(
+                        textMessage
+                    )}`;
+
+
+                /* Button Loading */
+
+                if (submitButton) {
+                    submitButton.disabled = true;
+
+                    submitButton.innerHTML =
+                        `<i data-lucide="loader-circle"></i> Membuka WhatsApp...`;
+
+                    refreshIcons();
+                }
+
+
+                showAlert(
+                    "success",
+                    "Membuka WhatsApp..."
+                );
+
+
+                /* Open WhatsApp */
+
+                window.open(
+                    whatsappURL,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+
+
+                /* Reset */
+
+                contactForm.reset();
+
+
+                /* Restore Button */
+
+                setTimeout(() => {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+
+                        submitButton.innerHTML =
+                            `<i data-lucide="send"></i> Kirim Pesan`;
+
+                        refreshIcons();
+                    }
+                }, 1000);
+
+
+                /* Clear Alert */
+
+                setTimeout(() => {
+                    if (formAlert) {
+                        formAlert.className =
+                            "form-alert";
+
+                        formAlert.textContent =
+                            "";
+                    }
+                }, 5000);
+            }
+        );
+    }
+
+
+    /* ============================================================
+       8. ESCAPE KEY
+       ============================================================ */
+
+    document.addEventListener(
+        "keydown",
+        (event) => {
+            if (
+                event.key === "Escape" &&
+                contactModal?.classList.contains(
+                    "active"
+                )
+            ) {
+                hideContactModal();
+            }
+        }
+    );
+
+
+    /* ============================================================
+       9. MOBILE NAVIGATION
+       ============================================================ */
+
+    const mobileMenuToggle =
+        document.getElementById(
+            "mobileMenuToggle"
+        );
+
+    const navLinks =
+        document.getElementById(
+            "navLinks"
+        );
+
+    if (mobileMenuToggle && navLinks) {
+
+        const updateMenuIcon = (isOpen) => {
+            mobileMenuToggle.innerHTML =
+                `<i data-lucide="${
+                    isOpen ? "x" : "menu"
+                }"></i>`;
+
+            mobileMenuToggle.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+
+            mobileMenuToggle.setAttribute(
+                "aria-label",
+                isOpen
+                    ? "Tutup menu"
+                    : "Buka menu"
+            );
+
+            refreshIcons();
+        };
+
+
+        /* Toggle */
+
+        mobileMenuToggle.addEventListener(
+            "click",
+            () => {
+                const isOpen =
+                    navLinks.classList.toggle(
+                        "active"
+                    );
+
+                updateMenuIcon(isOpen);
+            }
+        );
+
+
+        /* Close ketika link diklik */
+
+        navLinks
+            .querySelectorAll("a")
+            .forEach((link) => {
+                link.addEventListener(
+                    "click",
+                    () => {
+                        navLinks.classList.remove(
+                            "active"
+                        );
+
+                        updateMenuIcon(false);
+                    }
+                );
+            });
+
+
+        /* Close ketika resize ke desktop */
+
+        window.addEventListener(
+            "resize",
+            () => {
+                if (window.innerWidth > 768) {
+                    navLinks.classList.remove(
+                        "active"
+                    );
+
+                    updateMenuIcon(false);
+                }
+            }
+        );
+    }
+
+
+    /* ============================================================
+       10. THEME TOGGLE
+       ============================================================ */
+
+    const themeToggle =
+        document.getElementById(
+            "themeToggle"
+        );
+
+    const savedTheme =
+        localStorage.getItem("theme");
+
+    const applyTheme = (theme) => {
+        document.documentElement.setAttribute(
+            "data-theme",
+            theme
+        );
+
+        localStorage.setItem(
+            "theme",
+            theme
+        );
+
+        if (themeToggle) {
+            themeToggle.innerHTML =
+                `<i data-lucide="${
+                    theme === "light"
+                        ? "moon"
+                        : "sun"
+                }"></i>`;
+
+            themeToggle.setAttribute(
+                "aria-label",
+                theme === "light"
+                    ? "Aktifkan dark mode"
+                    : "Aktifkan light mode"
+            );
+
+            refreshIcons();
+        }
+    };
+
+    if (savedTheme === "light") {
+        applyTheme("light");
+    } else {
+        applyTheme("dark");
+    }
+
+    themeToggle?.addEventListener(
+        "click",
+        () => {
+            const currentTheme =
+                document.documentElement
+                    .getAttribute("data-theme");
+
+            applyTheme(
+                currentTheme === "light"
+                    ? "dark"
+                    : "light"
+            );
+        }
+    );
+
+
+    /* ============================================================
+       11. PROJECT FILTER
+       ============================================================ */
+
+    const filterButtons =
+        document.querySelectorAll(
+            ".filter-btn"
+        );
+
+    const projectCards =
+        document.querySelectorAll(
+            ".project-card"
+        );
+
+    const projectPages = {
+        web: {
+            name: "Web",
+            url: "projects-web.html"
+        },
+
+        uiux: {
+            name: "UI/UX",
+            url: "projects-uiux.html"
+        },
+
+        ai: {
+            name: "AI",
+            url: "projects-ai.html"
+        }
+    };
+
+
+    const updateProjectCategory = (
+        category
+    ) => {
+        projectCards.forEach((card) => {
+            const cardCategory =
+                card.dataset.category;
+
+            const isVisible =
+                cardCategory === category;
+
+            if (isVisible) {
+                card.classList.remove(
+                    "project-hidden"
+                );
+
+                // Restart animation
+                card.classList.remove(
+                    "project-show"
+                );
+
+                void card.offsetWidth;
+
+                card.classList.add(
+                    "project-show"
+                );
+            } else {
+                card.classList.remove(
+                    "project-show"
+                );
+
+                card.classList.add(
+                    "project-hidden"
+                );
+            }
+        });
+
+        refreshIcons();
+    };
+
+
+    filterButtons.forEach((button) => {
+        button.addEventListener(
+            "click",
+            () => {
+                const category =
+                    button.dataset.filter;
+
+                if (
+                    !category ||
+                    !projectPages[category]
+                ) {
+                    return;
+                }
+
+                filterButtons.forEach(
+                    (btn) => {
+                        btn.classList.remove(
+                            "active"
+                        );
+                    }
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                updateProjectCategory(
+                    category
+                );
+            }
+        );
+    });
+
+
+    /* Default filter */
+
+    const defaultFilter =
+        document.querySelector(
+            '.filter-btn[data-filter="web"]'
+        );
+
+    if (defaultFilter) {
+        defaultFilter.click();
+    } else if (filterButtons.length) {
+        filterButtons[0].click();
+    }
+
+
+    /* ============================================================
+       12. ACTIVE NAVIGATION
+       ============================================================ */
+
+    const currentPage =
+        window.location.pathname
+            .split("/")
+            .pop() || "index.html";
+
+    document
+        .querySelectorAll(".nav-links a")
+        .forEach((link) => {
+            const href =
+                link.getAttribute("href");
+
+            if (
+                href === currentPage
+            ) {
+                link.classList.add("active");
+            }
+        });
+
+
+    /* ============================================================
+       FINISH
+       ============================================================ */
+
+    refreshIcons();
+
+    console.log(
+        "%c Portfolio initialized successfully 🚀",
+        "color:#00f2fe;font-weight:bold;"
+    );
 });

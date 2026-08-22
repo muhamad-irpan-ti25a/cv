@@ -16,18 +16,82 @@
     <canvas id="particleCanvas"></canvas>
 
     <!-- Navigation Bar -->
-    <nav class="navbar">
-        <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active"><i data-lucide="home"></i> Home</a></li>
-            <li><a href="skills.html"><i data-lucide="code-2"></i> Skills</a></li>
-            <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
-            <li><a href="certificates.html"><i data-lucide="award"></i> Certificates</a></li>
-            <li><a href="videos.html"><i data-lucide="video"></i> Videos</a></li>
-            <li><a href="blog.html"><i data-lucide="newspaper"></i> Blog</a></li>
-        </ul>
-        <button class="custom-cursor-toggle" id="themeToggle"><i data-lucide="sun"></i></button>
-    </nav>
+    ```html
+<nav class="navbar">
+
+    <a href="index.html" class="nav-brand">
+        <i data-lucide="terminal"></i>
+        Dev<span>Portfolio</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <ul class="nav-links" id="navLinks">
+        <li>
+            <a href="index.html" class="active">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="skills.html">
+                <i data-lucide="code-2"></i>
+                <span>Skills</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="projects.html">
+                <i data-lucide="folder-git-2"></i>
+                <span>Projects</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="certificates.html">
+                <i data-lucide="award"></i>
+                <span>Certificates</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="videos.html">
+                <i data-lucide="video"></i>
+                <span>Videos</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="blog.html">
+                <i data-lucide="newspaper"></i>
+                <span>Blog</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="nav-actions">
+
+        <!-- Theme -->
+        <button class="custom-cursor-toggle" id="themeToggle" aria-label="Toggle theme">
+            <i data-lucide="sun"></i>
+        </button>
+
+        <!-- Mobile Menu -->
+        <button
+            class="mobile-menu-toggle"
+            id="mobileMenuToggle"
+            aria-label="Buka menu"
+            aria-expanded="false">
+
+            <i data-lucide="menu"></i>
+
+        </button>
+
+    </div>
+
+</nav>
+```
+
 
   <!-- Hero Section -->
     <section class="hero-section">
@@ -108,6 +172,366 @@
             </div>
         </div>
     </section>
+
+    <!-- ============================================================
+     PROJECTS SECTION
+     ============================================================ -->
+
+<section id="projects" class="projects-section">
+    <div class="container">
+
+        <div class="section-heading" data-aos="fade-up">
+            <span class="section-label">
+                <i data-lucide="code-2"></i>
+                Portfolio
+            </span>
+
+            <h2 class="section-title">
+                Featured <span class="text-gradient">Projects</span>
+            </h2>
+
+            <p class="section-description">
+                Beberapa project yang saya kerjakan sebagai
+                bagian dari proses belajar dan pengembangan
+                kemampuan di bidang teknologi.
+            </p>
+        </div>
+
+
+        <!-- Project Filter -->
+        <div class="project-filter" data-aos="fade-up">
+
+    <button class="filter-btn active" data-filter="web">
+        Web
+    </button>
+
+    <button class="filter-btn" data-filter="uiux">
+        UI/UX
+    </button>
+
+    <button class="filter-btn" data-filter="ai">
+        AI
+    </button>
+
+</div>
+
+
+        <!-- Project Grid -->
+        <div class="project-grid">
+
+
+            <!-- PROJECT 1 -->
+            <article
+                class="project-card glass-card"
+                data-category="web"
+                data-aos="fade-up"
+            >
+
+                <div class="project-image">
+
+                    <div class="project-placeholder">
+                        <i data-lucide="globe"></i>
+                    </div>
+
+                    <div class="project-overlay">
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="Live Demo"
+                        >
+                            <i data-lucide="external-link"></i>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="GitHub"
+                        >
+                            <i data-lucide="github"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="project-content">
+
+                    <div class="project-top">
+
+                        <span class="project-category">
+                            Web Development
+                        </span>
+
+                        <span class="project-number">
+                            01
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        Portfolio Website
+                    </h3>
+
+
+                    <p>
+                        Website portfolio personal dengan
+                        desain modern, responsive layout,
+                        animation, dan interactive elements.
+                    </p>
+
+
+                    <div class="project-tech">
+
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JavaScript</span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- PROJECT 2 -->
+            <article
+                class="project-card glass-card"
+                data-category="uiux"
+                data-aos="fade-up"
+                data-aos-delay="100"
+            >
+
+                <div class="project-image">
+
+                    <div class="project-placeholder">
+                        <i data-lucide="palette"></i>
+                    </div>
+
+                    <div class="project-overlay">
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="View Project"
+                        >
+                            <i data-lucide="external-link"></i>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="View Design"
+                        >
+                            <i data-lucide="figma"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="project-content">
+
+                    <div class="project-top">
+
+                        <span class="project-category">
+                            UI/UX Design
+                        </span>
+
+                        <span class="project-number">
+                            02
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        Music App Redesign
+                    </h3>
+
+
+                    <p>
+                        Konsep redesign aplikasi musik dengan
+                        fokus pada visual hierarchy, usability,
+                        dan pengalaman pengguna.
+                    </p>
+
+
+                    <div class="project-tech">
+
+                        <span>Figma</span>
+                        <span>UI Design</span>
+                        <span>UX</span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- PROJECT 3 -->
+            <article
+                class="project-card glass-card"
+                data-category="ai"
+                data-aos="fade-up"
+                data-aos-delay="200"
+            >
+
+                <div class="project-image">
+
+                    <div class="project-placeholder">
+                        <i data-lucide="bot"></i>
+                    </div>
+
+                    <div class="project-overlay">
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="Live Demo"
+                        >
+                            <i data-lucide="external-link"></i>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="GitHub"
+                        >
+                            <i data-lucide="github"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="project-content">
+
+                    <div class="project-top">
+
+                        <span class="project-category">
+                            Artificial Intelligence
+                        </span>
+
+                        <span class="project-number">
+                            03
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        AI Assistant
+                    </h3>
+
+
+                    <p>
+                        Eksperimen web assistant yang
+                        menggabungkan antarmuka interaktif
+                        dengan teknologi artificial intelligence.
+                    </p>
+
+
+                    <div class="project-tech">
+
+                        <span>JavaScript</span>
+                        <span>API</span>
+                        <span>AI</span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- PROJECT 4 -->
+            <article
+                class="project-card glass-card"
+                data-category="web"
+                data-aos="fade-up"
+            >
+
+                <div class="project-image">
+
+                    <div class="project-placeholder">
+                        <i data-lucide="layout-dashboard"></i>
+                    </div>
+
+                    <div class="project-overlay">
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="Live Demo"
+                        >
+                            <i data-lucide="external-link"></i>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="project-icon"
+                            aria-label="GitHub"
+                        >
+                            <i data-lucide="github"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="project-content">
+
+                    <div class="project-top">
+
+                        <span class="project-category">
+                            Web Development
+                        </span>
+
+                        <span class="project-number">
+                            04
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        Dashboard System
+                    </h3>
+
+
+                    <p>
+                        Dashboard berbasis web dengan tampilan
+                        clean dan responsive untuk menampilkan
+                        data secara lebih terstruktur.
+                    </p>
+
+
+                    <div class="project-tech">
+
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JavaScript</span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+</section>
 
     <!-- SPATIAL HOLOGRAPHIC DECK PREVIEW -->
     <section class="container spatial-section">

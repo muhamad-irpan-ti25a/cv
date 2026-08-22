@@ -1,61 +1,82 @@
 /* ==========================================================================
-   COMPONENTS CSS — SPATIAL HOLOGRAPHIC & VISION OS THEME
-   Synced directly with index.html Spatial Hub Architecture
+   COMPONENTS.CSS
+   Spatial Holographic & Vision OS Theme
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   1. HERO SECTION & SPLIT LAYOUT
-   -------------------------------------------------------------------------- */
+
+/* ==========================================================================
+   1. HERO SECTION
+   ========================================================================== */
+
 .hero-section {
     min-height: 85vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 120px 20px 60px 20px;
+    padding: 120px 20px 60px;
     position: relative;
 }
 
 .hero-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
 }
 
 .hero-content {
-    text-align: left;
     max-width: 800px;
+    text-align: left;
 }
 
 .status-badge {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+
     padding: 6px 16px;
+    margin-bottom: 25px;
+
     border-radius: 30px;
-    background: rgba(0, 242, 254, 0.08);
     border: 1px solid rgba(0, 242, 254, 0.25);
+
+    background: rgba(0, 242, 254, 0.08);
+
     font-size: 0.85rem;
     color: var(--primary-color);
-    margin-bottom: 25px;
 }
 
 .pulse {
     width: 8px;
     height: 8px;
-    background-color: #00e676;
+
     border-radius: 50%;
+
+    background-color: #00e676;
     box-shadow: 0 0 10px #00e676;
+
     animation: pulseGlow 1.8s infinite;
 }
 
 @keyframes pulseGlow {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(0, 230, 118, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0);
+    }
 }
 
 .hero-content h1 {
@@ -66,11 +87,13 @@
 }
 
 .terminal-prompt {
+    margin-bottom: 25px;
+
     font-family: 'Fira Code', monospace, sans-serif;
-    color: var(--text-dim);
     font-size: 1.2rem;
     font-weight: 500;
-    margin-bottom: 25px;
+
+    color: var(--text-dim);
 }
 
 .blink {
@@ -78,60 +101,80 @@
 }
 
 .hero-content p {
-    font-size: 1.1rem;
-    color: var(--text-dim);
     max-width: 620px;
-    margin: 0 0 35px 0;
+    margin: 0 0 35px;
+
+    font-size: 1.1rem;
     line-height: 1.6;
+
+    color: var(--text-dim);
 }
 
 
-/* --------------------------------------------------------------------------
-   2. HERO BUTTONS (SPATIAL & MODERN)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   2. HERO BUTTONS
+   ========================================================================== */
+
 .hero-buttons {
     display: flex;
-    gap: 15px;
     align-items: center;
     justify-content: flex-start;
     flex-wrap: wrap;
+    gap: 15px;
 }
 
 .btn-spatial {
     position: relative;
+
     display: inline-flex;
     align-items: center;
     gap: 10px;
+
     padding: 14px 28px;
+
+    border: none;
     border-radius: 14px;
+
     font-size: 0.95rem;
     font-weight: 600;
     text-decoration: none;
-    overflow: hidden;
+
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    border: none;
+    overflow: hidden;
+
+    transition:
+        all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Primary Button (Glow / Neon Holographic) */
+
+/* Primary Button */
+
 .btn-glow {
     background: rgba(0, 242, 254, 0.1);
-    color: var(--primary-color);
     border: 1px solid rgba(0, 242, 254, 0.4);
+
+    color: var(--primary-color);
+
     box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
 }
 
 .btn-glow:hover {
     background: rgba(0, 242, 254, 0.2);
+
     box-shadow: 0 0 35px rgba(0, 242, 254, 0.4);
+
     transform: translateY(-4px);
 }
 
-/* Secondary Button (Frosted Glass) */
+
+/* Secondary Button */
+
 .btn-glass {
     background: rgba(255, 255, 255, 0.03);
-    color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.15);
+
+    color: #ffffff;
+
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -139,18 +182,31 @@
 .btn-glass:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.3);
+
     transform: translateY(-4px);
 }
 
-/* Button Shine Sweep Effect */
+
+/* Button Shine */
+
 .btn-shine {
     position: absolute;
-    top: 0; 
+
+    top: 0;
     left: -100%;
-    width: 50%; 
+
+    width: 50%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+
     transform: skewX(-20deg);
+
     transition: left 0.7s ease;
 }
 
@@ -159,22 +215,27 @@
 }
 
 
-/* --------------------------------------------------------------------------
-   3. LIVE CODE TYPING CARD (HERO VISUAL)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   3. HERO CODE CARD
+   ========================================================================== */
+
 .hero-visual {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 
 .hero-code-card {
     width: 100%;
     max-width: 460px;
+
+    padding: 20px;
+
     background: rgba(10, 15, 30, 0.85);
+
     border: 1px solid rgba(0, 242, 254, 0.2);
     border-radius: 16px;
-    padding: 20px;
+
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
@@ -182,9 +243,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     margin-bottom: 15px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .window-controls {
@@ -195,63 +258,102 @@
 .dot {
     width: 10px;
     height: 10px;
+
     border-radius: 50%;
 }
-.dot.red { background: #ff5f56; box-shadow: 0 0 5px #ff5f56; }
-.dot.yellow { background: #ffbd2e; box-shadow: 0 0 5px #ffbd2e; }
-.dot.green { background: #27c93f; box-shadow: 0 0 5px #27c93f; }
+
+.dot.red {
+    background: #ff5f56;
+    box-shadow: 0 0 5px #ff5f56;
+}
+
+.dot.yellow {
+    background: #ffbd2e;
+    box-shadow: 0 0 5px #ffbd2e;
+}
+
+.dot.green {
+    background: #27c93f;
+    box-shadow: 0 0 5px #27c93f;
+}
 
 .code-title {
+    font-family: monospace;
     font-size: 0.85rem;
     color: var(--text-dim);
-    font-family: monospace;
 }
 
 .code-body {
+    overflow-x: auto;
+
     font-family: 'Fira Code', Consolas, monospace;
     font-size: 0.9rem;
     line-height: 1.6;
+
     color: #e2e8f0;
-    overflow-x: auto;
 }
 
 .code-body pre {
     margin: 0;
+
     white-space: pre-wrap;
     text-align: left;
 }
 
 .cursor-blink {
     color: var(--primary-color);
-    animation: blinkCursor 1s step-end infinite;
     font-weight: bold;
+
+    animation: blinkCursor 1s step-end infinite;
 }
 
 @keyframes blinkCursor {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
 }
 
-/* Syntax Highlighting Color Scheme */
-.syntax-keyword { color: #c678dd; }  /* Purple */
-.syntax-string { color: #98c379; }   /* Green */
-.syntax-property { color: #61afef; } /* Blue */
-.syntax-bracket { color: #e5c07b; }  /* Yellow */
+
+/* Syntax Highlighting */
+
+.syntax-keyword {
+    color: #c678dd;
+}
+
+.syntax-string {
+    color: #98c379;
+}
+
+.syntax-property {
+    color: #61afef;
+}
+
+.syntax-bracket {
+    color: #e5c07b;
+}
 
 
-/* --------------------------------------------------------------------------
-   4. ABOUT SECTION & GLASS CARDS
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   4. ABOUT SECTION
+   ========================================================================== */
+
 .about-section {
     padding: 80px 0;
 }
 
 .section-title {
-    font-size: 1.8rem;
     display: flex;
     align-items: center;
     gap: 10px;
+
     margin-bottom: 40px;
+
+    font-size: 1.8rem;
 }
 
 .about-grid {
@@ -266,16 +368,24 @@
 }
 
 .about-card h3 {
-    font-size: 1.3rem;
     margin-bottom: 12px;
+
+    font-size: 1.3rem;
+
     color: var(--primary-color);
 }
 
 .about-card p {
-    color: var(--text-dim);
-    line-height: 1.6;
     font-size: 0.95rem;
+    line-height: 1.6;
+
+    color: var(--text-dim);
 }
+
+
+/* ==========================================================================
+   5. ABOUT STATISTICS
+   ========================================================================== */
 
 .about-stats {
     display: grid;
@@ -284,26 +394,32 @@
 }
 
 .stat-card {
-    padding: 20px 15px;
-    text-align: center;
-    border-radius: 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    padding: 20px 15px;
+
+    text-align: center;
+
+    border-radius: 18px;
 }
 
 .stat-card i {
     width: 28px;
     height: 28px;
-    color: var(--primary-color);
+
     margin-bottom: 10px;
+
+    color: var(--primary-color);
 }
 
 .stat-card h4 {
+    margin-bottom: 4px;
+
     font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 4px;
 }
 
 .stat-card p {
@@ -312,30 +428,36 @@
 }
 
 
-/* --------------------------------------------------------------------------
-   5. SPATIAL HOLOGRAPHIC DECK
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   6. SPATIAL HOLOGRAPHIC DECK
+   ========================================================================== */
+
 .spatial-section {
-    padding: 60px 0 100px 0;
+    padding: 60px 0 100px;
 }
 
 .spatial-title {
-    text-align: center;
     margin-bottom: 45px;
+    text-align: center;
 }
 
 .spatial-tag {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+
+    padding: 4px 14px;
+    margin-bottom: 10px;
+
+    border-radius: 20px;
+
+    background: rgba(0, 242, 254, 0.1);
+
+    color: var(--primary-color);
+
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 1.5px;
-    color: var(--primary-color);
-    background: rgba(0, 242, 254, 0.1);
-    padding: 4px 14px;
-    border-radius: 20px;
-    margin-bottom: 10px;
 }
 
 .spatial-title h2 {
@@ -349,41 +471,75 @@
     gap: 22px;
 }
 
-/* Holographic Card Item */
+
+/* Holographic Card */
+
 .holo-card {
     position: relative;
-    padding: 28px;
-    border-radius: 22px;
-    text-decoration: none;
-    color: var(--text-color);
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     min-height: 240px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 28px;
+
     overflow: hidden;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+
+    color: var(--text-color);
+    text-decoration: none;
+
     transform-style: preserve-3d;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+
+    transition:
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
 }
 
 .holo-card:hover {
     border-color: var(--primary-color);
-    box-shadow: 0 15px 35px rgba(0, 242, 254, 0.15);
+
+    box-shadow:
+        0 15px 35px rgba(0, 242, 254, 0.15);
 }
 
 .holo-accent {
     border-color: rgba(0, 242, 254, 0.3);
-    background: linear-gradient(135deg, rgba(0, 242, 254, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0, 242, 254, 0.05) 0%,
+            rgba(255, 255, 255, 0.02) 100%
+        );
 }
+
+
+/* Holographic Shine */
 
 .holo-shine {
     position: absolute;
+
     top: 0;
     left: -100%;
+
     width: 50%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.12),
+            transparent
+        );
+
     transform: skewX(-25deg);
+
     transition: left 0.75s ease;
 }
 
@@ -391,21 +547,29 @@
     left: 200%;
 }
 
+
+/* Holographic Top */
+
 .holo-top {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
     margin-bottom: 20px;
 }
 
 .holo-icon-box {
     width: 44px;
     height: 44px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.06);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.06);
+
     color: var(--primary-color);
 }
 
@@ -415,60 +579,80 @@
 }
 
 .holo-num {
-    font-size: 0.85rem;
     font-family: monospace;
-    color: var(--text-dim);
+    font-size: 0.85rem;
     font-weight: 600;
+
+    color: var(--text-dim);
 }
 
+
+/* Holographic Content */
+
 .holo-main h3 {
-    font-size: 1.3rem;
     margin-bottom: 8px;
+
+    font-size: 1.3rem;
 }
 
 .holo-main p {
     font-size: 0.88rem;
-    color: var(--text-dim);
     line-height: 1.5;
+
+    color: var(--text-dim);
 }
 
 .holo-badge {
     display: inline-block;
-    font-size: 0.72rem;
+
     padding: 3px 10px;
-    border-radius: 12px;
-    background: rgba(0, 242, 254, 0.15);
-    color: var(--primary-color);
-    font-weight: 600;
     margin-bottom: 8px;
+
+    border-radius: 12px;
+
+    background: rgba(0, 242, 254, 0.15);
+
+    color: var(--primary-color);
+
+    font-size: 0.72rem;
+    font-weight: 600;
 }
+
+
+/* Holographic Action */
 
 .holo-action {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--primary-color);
+
     margin-top: 25px;
     padding-top: 15px;
+
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    transition: gap 0.2s ease;
+
+    color: var(--primary-color);
+
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .holo-card:hover .holo-action i {
     transform: translate(3px, -3px);
+
     transition: transform 0.2s ease;
 }
 
 
-/* --------------------------------------------------------------------------
-   6. VISION OS PILL BAR (TRIGGER CONTACT)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   7. VISION OS CONTACT PILL
+   ========================================================================== */
+
 .vision-trigger-wrapper {
-    margin-top: 50px;
     display: flex;
     justify-content: center;
+
+    margin-top: 50px;
 }
 
 .vision-pill-bar {
@@ -476,28 +660,44 @@
     align-items: center;
     justify-content: space-between;
     gap: 25px;
+
     padding: 14px 28px;
-    border-radius: 980px;
-    cursor: pointer;
+
     border: 1px solid rgba(0, 242, 254, 0.3);
+    border-radius: 980px;
+
     background: rgba(15, 23, 42, 0.75);
+
+    cursor: pointer;
+
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+
+    transition:
+        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .vision-pill-bar:hover {
     transform: translateY(-4px) scale(1.02);
+
     border-color: var(--primary-color);
-    box-shadow: 0 10px 30px rgba(0, 242, 254, 0.2);
+
+    box-shadow:
+        0 10px 30px rgba(0, 242, 254, 0.2);
 }
 
 .pill-pulse {
     width: 10px;
     height: 10px;
+
     border-radius: 50%;
+
     background-color: var(--primary-color);
+
     box-shadow: 0 0 10px var(--primary-color);
+
     animation: pulseGlow 2s infinite;
 }
 
@@ -505,6 +705,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+
     font-size: 0.95rem;
     font-weight: 500;
 }
@@ -512,6 +713,7 @@
 .pill-text i {
     width: 18px;
     height: 18px;
+
     color: var(--primary-color);
 }
 
@@ -519,38 +721,49 @@
     display: flex;
     align-items: center;
     gap: 6px;
+
+    padding: 8px 18px;
+
+    border-radius: 30px;
+
+    background: #ffffff;
+
+    color: #0f172a;
+
     font-size: 0.85rem;
     font-weight: 600;
-    color: #0f172a;
-    background: #ffffff;
-    padding: 8px 18px;
-    border-radius: 30px;
 }
 
 
-/* --------------------------------------------------------------------------
-/* --------------------------------------------------------------------------
-   5. SPATIAL VISION OS MODAL WINDOW (macOS App Launch Style)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   8. SPATIAL VISION OS MODAL
+   ========================================================================== */
+
 .spatial-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
+
+    inset: 0;
+
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    z-index: 20000;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    /* State tertutup */
+
+    z-index: 20000;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
-                visibility 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    transition:
+        opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .spatial-overlay.active {
@@ -561,33 +774,55 @@
 .spatial-window {
     width: 90%;
     max-width: 500px;
+
     padding: 0;
+
     overflow: hidden;
-    border-radius: 20px;
+
     border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+
     background: rgba(15, 23, 42, 0.88);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
-                0 0 40px rgba(0, 242, 254, 0.15);
-    
-    /* State Tertutup: Menguncup mengecil dan agak gepeng ala App macOS */
+
+    box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(0, 242, 254, 0.15);
+
     transform: scale(0.08) translateY(100px);
+
     opacity: 0;
+
     filter: blur(12px);
-    
-    /* Transition super smooth khas macOS */
-    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
-                opacity 0.35s ease-out, 
-                filter 0.35s ease-out;
-    will-change: transform, opacity, filter, transform-origin;
+
+    transition:
+        transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.35s ease-out,
+        filter 0.35s ease-out;
+
+    will-change: transform, opacity, filter;
 }
 
+.spatial-overlay.active .spatial-window {
+    transform: scale(1) translateY(0);
+
+    opacity: 1;
+
+    filter: blur(0);
+}
+
+
+/* Modal Header */
+
 .spatial-header {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 14px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    padding: 14px 20px;
+
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .spatial-controls {
@@ -596,98 +831,638 @@
 }
 
 .spatial-close {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: var(--text-dim);
     width: 28px;
     height: 28px;
-    border-radius: 50%;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    color: var(--text-dim);
+
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    transition:
+        all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .spatial-close:hover {
     background: rgba(255, 95, 86, 0.9);
+
     color: #ffffff;
+
     transform: scale(1.1);
 }
 
 .spatial-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-color);
     display: flex;
     align-items: center;
     gap: 8px;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    color: var(--text-color);
 }
 
 .spatial-title i {
     width: 16px;
     height: 16px;
+
     color: var(--primary-color);
 }
 
 .spatial-body {
-    padding: 25px;
     max-height: 80vh;
+
+    padding: 25px;
+
     overflow-y: auto;
 }
 
-/* State Terbuka: Mengembang penuh ke layar */
-.spatial-overlay.active .spatial-window {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-    filter: blur(0px);
+
+/* ==========================================================================
+   9. MOBILE NAVIGATION
+   ========================================================================== */
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mobile-menu-toggle {
+    width: 38px;
+    height: 38px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    color: var(--text-color);
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle:hover {
+    color: var(--primary-color);
+
+    border-color: var(--primary-color);
+}
+
+.mobile-menu-toggle svg {
+    width: 19px;
+    height: 19px;
 }
 
 
-/* --------------------------------------------------------------------------
-   8. RESPONSIVE BREAKPOINTS
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   10. TABLET RESPONSIVE
+   ========================================================================== */
+
 @media (max-width: 900px) {
+
+    /* Navbar */
+
+    .navbar {
+        width: calc(100% - 30px);
+        padding: 12px 20px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+
+    .nav-links a svg {
+        width: 16px;
+        height: 16px;
+    }
+
+
+    /* Hero */
+
+    .hero-section {
+        min-height: auto;
+        padding: 140px 20px 70px;
+    }
+
     .hero-container {
         grid-template-columns: 1fr;
-        text-align: center;
+        gap: 50px;
     }
 
     .hero-content {
+        margin: 0 auto;
+
         text-align: center;
     }
 
+    .hero-content h1 {
+        font-size: clamp(2.3rem, 6vw, 3rem);
+    }
+
     .hero-content p {
-        margin: 0 auto 35px auto;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .hero-buttons {
         justify-content: center;
     }
 
+    .hero-visual {
+        width: 100%;
+    }
+
+    .hero-code-card {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+
+    /* About */
+
     .about-grid {
         grid-template-columns: 1fr;
     }
+
+
+    /* Spatial Cards */
+
+    .spatial-deck {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+
+    /* Modal */
+
+    .spatial-window {
+        width: calc(100% - 30px);
+        max-height: calc(100vh - 30px);
+    }
+
+    .spatial-body {
+        max-height: calc(100vh - 100px);
+    }
 }
 
+
+/* ==========================================================================
+   11. MOBILE RESPONSIVE
+   ========================================================================== */
+
 @media (max-width: 600px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 100%;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+
+    /* Navbar */
+
+    .navbar {
+        width: calc(100% - 20px);
+
+        top: 10px;
+
+        padding: 10px 14px;
+
+        gap: 10px;
+
+        border-radius: 18px;
+
+        flex-wrap: wrap;
+    }
+
+    .nav-brand {
+        font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    .nav-brand svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .custom-cursor-toggle {
+        margin-left: auto;
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+
+        width: 100%;
+
+        flex-direction: column;
+
+        gap: 4px;
+
+        padding: 10px;
+        margin-top: 8px;
+
+        background: rgba(13, 17, 23, 0.96);
+
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+
+        animation: mobileMenuOpen 0.25s ease forwards;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        width: 100%;
+
+        padding: 12px 14px;
+
+        border-radius: 10px;
+
+        font-size: 0.9rem;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+        background: rgba(0, 242, 254, 0.08);
+    }
+
+    .nav-links a svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    @keyframes mobileMenuOpen {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* Hero */
+
+    .hero-section {
+        min-height: auto;
+        padding: 115px 16px 60px;
+    }
+
+    .hero-container {
+        gap: 35px;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+
+        font-size: 0.72rem;
+    }
+
     .hero-content h1 {
-        font-size: 2.2rem;
+        font-size: clamp(2rem, 10vw, 2.5rem);
+        line-height: 1.15;
+    }
+
+    .terminal-prompt {
+        margin-bottom: 18px;
+
+        font-size: 0.95rem;
+    }
+
+    .hero-content p {
+        margin-bottom: 25px;
+
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+
+    /* Hero Buttons */
+
+    .hero-buttons {
+        width: 100%;
+
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+    .btn-spatial {
+        width: 100%;
+
+        justify-content: center;
+
+        padding: 13px 20px;
+    }
+
+
+    /* Code Card */
+
+    .hero-code-card {
+        width: 100%;
+
+        padding: 14px;
+
+        border-radius: 14px;
+    }
+
+    .code-header {
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .code-title {
+        font-size: 0.72rem;
+    }
+
+    .code-body {
+        font-size: 0.72rem;
+        line-height: 1.5;
+    }
+
+    .window-controls {
+        gap: 5px;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+
+    /* About */
+
+    .about-section {
+        padding: 55px 0;
+    }
+
+    .section-title {
+        margin-bottom: 25px;
+
+        font-size: 1.45rem;
+    }
+
+    .about-card {
+        padding: 22px;
+    }
+
+    .about-card h3 {
+        font-size: 1.15rem;
+    }
+
+    .about-card p {
+        font-size: 0.88rem;
     }
 
     .about-stats {
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 16px 8px;
+    }
+
+    .stat-card i {
+        width: 22px;
+        height: 22px;
+    }
+
+    .stat-card h4 {
+        font-size: 1.4rem;
+    }
+
+    .stat-card p {
+        font-size: 0.65rem;
+    }
+
+
+    /* Spatial Section */
+
+    .spatial-section {
+        padding: 45px 16px 70px;
+    }
+
+    .spatial-title {
+        margin-bottom: 30px;
+    }
+
+    .spatial-tag {
+        padding: 4px 10px;
+
+        font-size: 0.65rem;
+    }
+
+    .spatial-title h2 {
+        font-size: 1.55rem;
+    }
+
+    .spatial-deck {
         grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .holo-card {
+        min-height: 210px;
+
+        padding: 22px;
+
+        border-radius: 18px;
+    }
+
+    .holo-main h3 {
+        font-size: 1.15rem;
+    }
+
+    .holo-main p {
+        font-size: 0.82rem;
+    }
+
+
+    /* Contact Pill */
+
+    .vision-trigger-wrapper {
+        margin-top: 30px;
     }
 
     .vision-pill-bar {
+        width: 100%;
+
         flex-direction: column;
+
+        gap: 12px;
+
+        padding: 16px;
+
+        border-radius: 18px;
+
         text-align: center;
-        border-radius: 20px;
-        gap: 15px;
+    }
+
+    .pill-text {
+        font-size: 0.8rem;
     }
 
     .pill-btn {
         width: 100%;
+
         justify-content: center;
+
+        padding: 8px 14px;
+
+        font-size: 0.8rem;
+    }
+
+
+    /* Contact Modal */
+
+    .spatial-window {
+        width: calc(100% - 24px);
+
+        max-height: calc(100vh - 24px);
+
+        border-radius: 16px;
+    }
+
+    .spatial-header {
+        padding: 12px 15px;
+    }
+
+    .spatial-body {
+        max-height: calc(100vh - 80px);
+
+        padding: 18px;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 10px 12px;
+
+        font-size: 0.85rem;
+    }
+
+
+    /* AI Chat */
+
+    .ai-fab-button {
+        width: 52px;
+        height: 52px;
+
+        right: 15px;
+        bottom: 15px;
+    }
+
+    .ai-popup-chat {
+        width: calc(100% - 30px);
+
+        height: min(420px, calc(100vh - 100px));
+
+        right: 15px;
+        bottom: 80px;
+    }
+}
+
+
+/* ==========================================================================
+   12. VERY SMALL PHONE
+   ========================================================================== */
+
+@media (max-width: 380px) {
+
+    .navbar {
+        padding: 9px 12px;
+    }
+
+    .nav-brand {
+        font-size: 0.9rem;
+    }
+
+    .hero-content h1 {
+        font-size: 1.85rem;
+    }
+
+    .terminal-prompt {
+        font-size: 0.85rem;
+    }
+
+    .hero-content p {
+        font-size: 0.82rem;
+    }
+
+    .about-stats {
+        gap: 5px;
+    }
+
+    .stat-card {
+        padding: 14px 5px;
+    }
+
+    .stat-card h4 {
+        font-size: 1.2rem;
+    }
+
+    .stat-card p {
+        font-size: 0.58rem;
+    }
+
+    .holo-card {
+        min-height: 195px;
+        padding: 18px;
+    }
+}
+
+
+/* ==========================================================================
+   13. ACCESSIBILITY
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
     }
 }
