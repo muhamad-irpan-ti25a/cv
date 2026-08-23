@@ -6,6 +6,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let certificatesData = [];
     let isSpeechEnabled = false;
     const synth = window.speechSynthesis;
+    let selectedVoice = null;
+
+    // Inisialisasi Suara Bahasa Indonesia secara eksplisit
+    function initVoices() {
+        if (!synth) return;
+        const voices = synth.getVoices();
+        selectedVoice = voices.find(v => v.lang.includes("id") || v.lang.includes("ID")) || voices[0];
+    }
+    if (synth) {
+        initVoices();
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = initVoices;
+        }
+    }
 
     // 1. Inject UI CSS & Structure
     container.innerHTML = `
@@ -15,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: inline-flex;
                 align-items: center;
                 gap: 4px;
-                padding: 4px 8px;
+                padding: 6px 10px;
             }
             .typing-indicator span {
                 width: 6px;
@@ -180,135 +194,92 @@ document.addEventListener("DOMContentLoaded", () => {
                 line-height: 1.4;
                 color: #cbd5e1;
             }
-                /* ============================================================
-   MODERN WELCOME CARD & QUICK CHIPS (Vision OS Style)
-   ============================================================ */
 
-.ai-welcome-card {
-    background: rgba(0, 242, 254, 0.04);
-    border: 1px solid rgba(0, 242, 254, 0.2);
-    border-radius: 14px;
-    padding: 12px 14px;
-    margin-bottom: 6px;
-    backdrop-filter: blur(8px);
-}
+            /* Modern Welcome Card */
+            .ai-welcome-card {
+                background: rgba(0, 242, 254, 0.04);
+                border: 1px solid rgba(0, 242, 254, 0.2);
+                border-radius: 14px;
+                padding: 12px 14px;
+                margin-bottom: 6px;
+                backdrop-filter: blur(8px);
+            }
+            .ai-welcome-card p {
+                margin: 0 0 10px 0;
+                font-size: 0.85rem;
+                line-height: 1.5;
+                color: #e2e8f0;
+            }
+            .ai-welcome-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 6px;
+                color: var(--primary-color, #00f2fe);
+                font-weight: 600;
+                font-size: 0.88rem;
+            }
+            .ai-welcome-header i {
+                width: 16px;
+                height: 16px;
+            }
 
-.ai-welcome-card p {
-    margin: 0 0 10px 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: #e2e8f0;
-}
+            /* Scrollbar Clean */
+            .ai-chat-body::-webkit-scrollbar-button,
+            .cert-cards-scroll::-webkit-scrollbar-button,
+            .cert-filter-pills::-webkit-scrollbar-button,
+            .ai-suggestions::-webkit-scrollbar-button {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
+            .cert-cards-scroll,
+            .cert-filter-pills,
+            .ai-suggestions {
+                -ms-overflow-style: -ms-autohide-scrollbar;
+            }
+            .ai-chat-body::-webkit-scrollbar,
+            .cert-cards-scroll::-webkit-scrollbar,
+            .cert-filter-pills::-webkit-scrollbar,
+            .ai-suggestions::-webkit-scrollbar {
+                height: 4px;
+                width: 4px;
+            }
+            .ai-chat-body::-webkit-scrollbar-track,
+            .cert-cards-scroll::-webkit-scrollbar-track,
+            .cert-filter-pills::-webkit-scrollbar-track,
+            .ai-suggestions::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .ai-chat-body::-webkit-scrollbar-thumb,
+            .cert-cards-scroll::-webkit-scrollbar-thumb,
+            .cert-filter-pills::-webkit-scrollbar-thumb,
+            .ai-suggestions::-webkit-scrollbar-thumb {
+                background: rgba(0, 242, 254, 0.3);
+                border-radius: 10px;
+                transition: background 0.3s ease;
+            }
+            .ai-chat-body::-webkit-scrollbar-thumb:hover,
+            .cert-cards-scroll::-webkit-scrollbar-thumb:hover,
+            .cert-filter-pills::-webkit-scrollbar-thumb:hover,
+            .ai-suggestions::-webkit-scrollbar-thumb:hover {
+                background: #00f2fe;
+            }
 
-.ai-welcome-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    color: var(--primary-color, #00f2fe);
-    font-weight: 600;
-    font-size: 0.88rem;
-}
+            /* Prevent Zoom & Fix Input */
+            .ai-popup-chat {
+                will-change: left, top;
+            }
+            .ai-chat-footer input {
+                font-size: 16px !important;
+                touch-action: manipulation;
+            }
 
-.ai-welcome-header i {
-    width: 16px;
-    height: 16px;
-}
-
-/* Quick Suggestion Chips Container */
-.ai-suggestions {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 4px 2px 8px;
-    margin-top: 4px;
-    scroll-snap-type: x mandatory;
-}
-
-/* Quick Chips Style */
-.ai-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(0, 242, 254, 0.3);
-    color: #f0f6fc;
-    border-radius: 30px;
-    padding: 6px 14px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    white-space: nowrap;
-    cursor: pointer;
-    scroll-snap-align: start;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.ai-chip:hover {
-    background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.25));
-    border-color: #00f2fe;
-    color: #00f2fe;
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);
-}
-
-.ai-chip i {
-    width: 14px;
-    height: 14px;
-    color: #00f2fe;
-}
-    /* ============================================================
-   HIDE SCROLLBAR BUTTONS / ARROWS (<----->)
-   ============================================================ */
-
-/* Sembunyikan tombol panah/segitiga scroll di semua elemen AI Chat */
-.ai-chat-body::-webkit-scrollbar-button,
-.cert-cards-scroll::-webkit-scrollbar-button,
-.cert-filter-pills::-webkit-scrollbar-button,
-.ai-suggestions::-webkit-scrollbar-button {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-}
-
-/* Penyesuaian Scrollbar Ultra Clean */
-.cert-cards-scroll,
-.cert-filter-pills,
-.ai-suggestions {
-    /* Menghilangkan panah bawaan di Edge/IE */
-    -ms-overflow-style: -ms-autohide-scrollbar;
-}
-
-.ai-chat-body::-webkit-scrollbar,
-.cert-cards-scroll::-webkit-scrollbar,
-.cert-filter-pills::-webkit-scrollbar,
-.ai-suggestions::-webkit-scrollbar {
-    height: 4px; /* Sangat tipis & elegan */
-    width: 4px;
-}
-
-.ai-chat-body::-webkit-scrollbar-track,
-.cert-cards-scroll::-webkit-scrollbar-track,
-.cert-filter-pills::-webkit-scrollbar-track,
-.ai-suggestions::-webkit-scrollbar-track {
-    background: transparent; /* Latar belakang track transparan */
-}
-
-.ai-chat-body::-webkit-scrollbar-thumb,
-.cert-cards-scroll::-webkit-scrollbar-thumb,
-.cert-filter-pills::-webkit-scrollbar-thumb,
-.ai-suggestions::-webkit-scrollbar-thumb {
-    background: rgba(0, 242, 254, 0.3);
-    border-radius: 10px;
-    transition: background 0.3s ease;
-}
-
-.ai-chat-body::-webkit-scrollbar-thumb:hover,
-.cert-cards-scroll::-webkit-scrollbar-thumb:hover,
-.cert-filter-pills::-webkit-scrollbar-thumb:hover,
-.ai-suggestions::-webkit-scrollbar-thumb:hover {
-    background: #00f2fe;
-}
+            /* Voice Icon Toggle Display Fix */
+            .ai-icon-btn .icon-speech-off { display: block; }
+            .ai-icon-btn .icon-speech-on { display: none; }
+            .ai-icon-btn.active .icon-speech-off { display: none; }
+            .ai-icon-btn.active .icon-speech-on { display: block; }
         </style>
 
         <button class="ai-fab-button" id="aiBtn" aria-label="Buka AI Chat">
@@ -327,7 +298,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 <div class="ai-header-actions">
                     <button class="ai-icon-btn" id="aiVoiceToggle" title="Aktifkan Suara Voice">
-                        <i data-lucide="volume-x"></i>
+                        <i data-lucide="volume-x" class="icon-speech-off"></i>
+                        <i data-lucide="volume-2" class="icon-speech-on"></i>
                     </button>
                     <button class="ai-icon-btn" id="aiClearChat" title="Hapus Obrolan">
                         <i data-lucide="trash-2"></i>
@@ -337,30 +309,30 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="ai-chat-body" id="aiBody">
-    <div class="ai-msg bot">
-        <div class="ai-welcome-card">
-            <div class="ai-welcome-header">
-                <i data-lucide="sparkles"></i>
-                <span>Spatial Assistant Ready</span>
+                <div class="ai-msg bot">
+                    <div class="ai-welcome-card">
+                        <div class="ai-welcome-header">
+                            <i data-lucide="sparkles"></i>
+                            <span>Spatial Assistant Ready</span>
+                        </div>
+                        <p>Halo! Saya AI Agent web ini. Ada yang bisa saya bantu hari ini? Silakan pilih opsi cepat di bawah atau ketikkan pertanyaan Anda:</p>
+                        <div class="ai-suggestions">
+                            <button class="ai-chip" data-prompt="Tampilkan sertifikat">
+                                <i data-lucide="award"></i> Semua Sertifikat
+                            </button>
+                            <button class="ai-chip" data-prompt="Cari sertifikat linux">
+                                <i data-lucide="terminal"></i> Sertifikat Linux
+                            </button>
+                            <button class="ai-chip" data-prompt="Hubungi">
+                                <i data-lucide="mail"></i> Form Kontak
+                            </button>
+                            <button class="ai-chip" data-prompt="Ganti tema">
+                                <i data-lucide="moon"></i> Ubah Tampilan
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p>Halo! Saya AI Agent web ini. Ada yang bisa saya bantu hari ini? Silakan pilih opsi cepat di bawah atau ketikkan pertanyaan Anda:</p>
-            <div class="ai-suggestions">
-                <button class="ai-chip" data-prompt="Tampilkan sertifikat">
-                    <i data-lucide="award"></i> Semua Sertifikat
-                </button>
-                <button class="ai-chip" data-prompt="Cari sertifikat linux">
-                    <i data-lucide="terminal"></i> Sertifikat Linux
-                </button>
-                <button class="ai-chip" data-prompt="Hubungi">
-                    <i data-lucide="mail"></i> Form Kontak
-                </button>
-                <button class="ai-chip" data-prompt="Ganti tema">
-                    <i data-lucide="moon"></i> Ubah Tampilan
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
             <div class="ai-chat-footer">
                 <input type="text" id="aiInput" placeholder="Ketik perintah atau 'Cari sertifikat [topik]'..." autocomplete="off">
@@ -387,20 +359,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (aiWindow.classList.contains("active")) aiInput.focus();
     });
 
-    aiClose.addEventListener("click", () => aiWindow.classList.remove("active"));
+    aiClose.addEventListener("click", () => {
+        aiWindow.classList.remove("active");
+        stopSpeech();
+    });
 
-    // Toggle Voice Mode
+    // Toggle Voice Mode (Toggle Class tanpa Mengubah Elemen DOM - Bebas Flicker & Responsif)
     aiVoiceToggle.addEventListener("click", () => {
         isSpeechEnabled = !isSpeechEnabled;
         aiVoiceToggle.classList.toggle("active", isSpeechEnabled);
-        aiVoiceToggle.innerHTML = `<i data-lucide="${isSpeechEnabled ? "volume-2" : "volume-x"}"></i>`;
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-        
-        if (!isSpeechEnabled && synth) synth.cancel();
+
+        if (!isSpeechEnabled) {
+            stopSpeech();
+        } else {
+            speakText("Suara dikondisikan aktif.");
+        }
     });
 
     // Clear Chat
     aiClearChat.addEventListener("click", () => {
+        stopSpeech();
         aiBody.innerHTML = `
             <div class="ai-msg bot">
                 Obrolan telah dibersihkan! Ada yang ingin Anda tanyakan lagi?
@@ -414,18 +392,43 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof lucide !== 'undefined') lucide.createIcons();
     });
 
+    // Hentikan Suara Sepenuhnya
+    function stopSpeech() {
+        if (synth) synth.cancel();
+    }
+
     // Voice Synthesis Reader
     function speakText(text) {
         if (!isSpeechEnabled || !synth) return;
-        synth.cancel();
+        stopSpeech();
 
-        // Bersihkan teks dari format HTML sebelum dibaca
         const cleanText = text.replace(/<[^>]*>?/gm, '');
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = "id-ID";
         utterance.rate = 1.0;
-        synth.speak(utterance);
+        
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+
+        setTimeout(() => {
+            if (isSpeechEnabled) synth.speak(utterance);
+        }, 50);
     }
+
+    /* ============================================================
+       AUTO-STOP SPEECH SYSTEM ON LEAVE / SWITCH PAGE
+       ============================================================ */
+    // 1. Hentikan suara saat meninggalkan halaman (klik link ke page lain)
+    window.addEventListener("beforeunload", () => stopSpeech());
+    window.addEventListener("pagehide", () => stopSpeech());
+
+    // 2. Hentikan suara saat berpindah tab browser / minimize
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            stopSpeech();
+        }
+    });
 
     // Dynamic Fetcher untuk Membaca `certificates.html`
     async function fetchCertificatesFromPage() {
@@ -611,7 +614,6 @@ document.addEventListener("DOMContentLoaded", () => {
     async function processQuery(query) {
         const input = query.toLowerCase().trim();
 
-        // Check 1: Pencarian Spesifik Sertifikat (e.g. "cari sertifikat linux")
         if (input.includes("cari sertifikat") || (input.includes("sertifikat") && input.split(" ").length > 1)) {
             const searchResults = await searchCertificatesByQuery(input);
             if (searchResults.length > 0) {
@@ -622,7 +624,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Check 2: Action Commands
         for (let item of siteActions) {
             if (item.keywords.some(k => input.includes(k))) {
                 return {
@@ -633,7 +634,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Check 3: Scraped Page Content
         const scrapedData = scrapePageContent();
         for (let data of scrapedData) {
             const words = input.split(" ").filter(w => w.length > 2);
@@ -655,8 +655,9 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // UI Helpers
+    // UI Helpers (DENGAN EFEK MENGETIK / TYPING EFFECT)
     function showTypingIndicator() {
+        removeTypingIndicator();
         const div = document.createElement("div");
         div.className = "ai-msg bot typing-msg";
         div.id = "aiTyping";
@@ -674,6 +675,36 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typingElem) typingElem.remove();
     }
 
+    // Fungsi Efek Mengetik Teks Karakter demi Karakter
+    function appendBotMsgWithTyping(textHTML, customHTML = "", onComplete = null) {
+        const div = document.createElement("div");
+        div.className = "ai-msg bot";
+        aiBody.appendChild(div);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = textHTML;
+        const plainText = tempDiv.textContent || tempDiv.innerText || "";
+
+        let charIndex = 0;
+        const typingSpeed = 15;
+
+        function typeNextChar() {
+            if (charIndex < plainText.length) {
+                div.textContent = plainText.substring(0, charIndex + 1);
+                charIndex++;
+                aiBody.scrollTop = aiBody.scrollHeight;
+                setTimeout(typeNextChar, typingSpeed);
+            } else {
+                div.innerHTML = textHTML + customHTML;
+                aiBody.scrollTop = aiBody.scrollHeight;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                if (onComplete) onComplete();
+            }
+        }
+
+        typeNextChar();
+    }
+
     async function handleSend(customText = null) {
         const text = customText || aiInput.value.trim();
         if (!text) return;
@@ -683,24 +714,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showTypingIndicator();
 
-        const result = await processQuery(text);
-        removeTypingIndicator();
+        setTimeout(async () => {
+            const result = await processQuery(text);
+            removeTypingIndicator();
 
-        if (result.type === "SHOW_CERTIFICATES") {
-            const certs = await fetchCertificatesFromPage();
-            const fullReply = result.text + createCertificateGalleryHTML(certs, "All");
-            appendMsg(fullReply, "bot");
-            speakText(result.text);
-            return;
-        }
+            if (result.type === "SHOW_CERTIFICATES") {
+                const certs = await fetchCertificatesFromPage();
+                const customHTML = createCertificateGalleryHTML(certs, "All");
+                appendBotMsgWithTyping(result.text, customHTML, () => speakText(result.text));
+                return;
+            }
 
-        const replyHTML = result.text + (result.customHTML || "");
-        appendMsg(replyHTML, "bot");
-        speakText(result.text);
-
-        if (result.action) {
-            setTimeout(() => result.action(), 800);
-        }
+            const customHTML = result.customHTML || "";
+            appendBotMsgWithTyping(result.text, customHTML, () => {
+                speakText(result.text);
+                if (result.action) {
+                    setTimeout(() => result.action(), 500);
+                }
+            });
+        }, 500);
     }
 
     aiSend.addEventListener("click", () => handleSend());
@@ -724,14 +756,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Event Delegation (Chips, Filter, & Certificate Detail)
     aiBody.addEventListener("click", (e) => {
-        // Quick Suggestion Chips
         if (e.target.classList.contains("ai-chip")) {
             const prompt = e.target.getAttribute("data-prompt");
             if (prompt) handleSend(prompt);
             return;
         }
 
-        // Filter Kategori
         if (e.target.classList.contains("cert-filter-btn")) {
             const category = e.target.getAttribute("data-category");
             const galleryContainer = e.target.closest(".cert-gallery-container");
@@ -741,7 +771,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Klik Kartu untuk Detail Sertifikat
         const certCard = e.target.closest(".cert-card-item");
         if (certCard) {
             const certId = certCard.getAttribute("data-cert-id");
@@ -752,7 +781,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     removeTypingIndicator();
                     const detailHTML = `
-                        Detail sertifikat **${cert.title}**:
                         <div class="cert-detail-card">
                             <img src="${cert.image}" alt="${cert.title}" onerror="this.src='https://via.placeholder.com/300x160?text=Sertifikat'">
                             <h4>${cert.title}</h4>
@@ -760,233 +788,48 @@ document.addEventListener("DOMContentLoaded", () => {
                             <p>${cert.description}</p>
                         </div>
                     `;
-                    appendMsg(detailHTML, "bot");
-                    speakText(`Berikut detail untuk sertifikat ${cert.title}`);
+                    const introText = `Berikut detail untuk sertifikat ${cert.title}:`;
+                    appendBotMsgWithTyping(introText, detailHTML, () => speakText(introText));
                 }, 400);
             }
         }
     });
+
     /* ============================================================
-   MAKE AI CHAT DRAGGABLE (TOUCH & MOUSE DRAG)
-   ============================================================ */
+       PRECISE DRAGGABLE FORM SYSTEM (NO FLICKER & FAST DRAG)
+       ============================================================ */
+    function initDraggableAIChat() {
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let initialLeft = 0, initialTop = 0;
+        let lastTapTime = 0;
 
-function makeAIChatDraggable() {
-    const chatPopup = document.querySelector(".ai-popup-chat");
-    const chatHeader = document.querySelector(".ai-chat-header");
+        const getPopup = () => document.querySelector(".ai-popup-chat");
 
-    if (!chatPopup || !chatHeader) return;
+        const startDrag = (clientX, clientY, popup) => {
+            isDragging = true;
+            popup.classList.add("is-dragging", "is-dragged");
 
-    let isDragging = false;
-    let startX = 0, startY = 0;
-    let initialLeft = 0, initialTop = 0;
+            startX = clientX;
+            startY = clientY;
 
-    // --- 1. MOUSE EVENTS (DESKTOP) ---
-    chatHeader.addEventListener("mousedown", (e) => {
-        // Abaikan jika yang diklik adalah tombol close
-        if (e.target.closest(".ai-close-btn")) return;
+            const rect = popup.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialTop = rect.top;
 
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-
-        const rect = chatPopup.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-
-        // Ubah style position menjadi absolut terhadap viewport
-        chatPopup.style.right = "auto";
-        chatPopup.style.bottom = "auto";
-        chatPopup.style.left = `${initialLeft}px`;
-        chatPopup.style.top = `${initialTop}px`;
-
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-    });
-
-    function onMouseMove(e) {
-        if (!isDragging) return;
-        
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        let newLeft = initialLeft + dx;
-        let newTop = initialTop + dy;
-
-        // Batasi agar tidak keluar dari layar (Boundaries)
-        const maxLeft = window.innerWidth - chatPopup.offsetWidth;
-        const maxTop = window.innerHeight - chatPopup.offsetHeight;
-
-        newLeft = Math.max(10, Math.min(newLeft, maxLeft - 10));
-        newTop = Math.max(10, Math.min(newTop, maxTop - 10));
-
-        chatPopup.style.left = `${newLeft}px`;
-        chatPopup.style.top = `${newTop}px`;
-    }
-
-    function onMouseUp() {
-        isDragging = false;
-        document.removeEventListener("mousemove", onMouseMove);
-        document.removeEventListener("mouseup", onMouseUp);
-    }
-
-    // --- 2. TOUCH EVENTS (MOBILE / HP) ---
-    chatHeader.addEventListener("touchstart", (e) => {
-        if (e.target.closest(".ai-close-btn")) return;
-
-        isDragging = true;
-        const touch = e.touches[0];
-        startX = touch.clientX;
-        startY = touch.clientY;
-
-        const rect = chatPopup.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-
-        chatPopup.style.right = "auto";
-        chatPopup.style.bottom = "auto";
-        chatPopup.style.left = `${initialLeft}px`;
-        chatPopup.style.top = `${initialTop}px`;
-
-        document.addEventListener("touchmove", onTouchMove, { passive: false });
-        document.addEventListener("touchend", onTouchEnd);
-    });
-
-    function onTouchMove(e) {
-        if (!isDragging) return;
-        e.preventDefault(); // Mencegah scrolling layar saat menggeser chat
-
-        const touch = e.touches[0];
-        const dx = touch.clientX - startX;
-        const dy = touch.clientY - startY;
-
-        let newLeft = initialLeft + dx;
-        let newTop = initialTop + dy;
-
-        const maxLeft = window.innerWidth - chatPopup.offsetWidth;
-        const maxTop = window.innerHeight - chatPopup.offsetHeight;
-
-        newLeft = Math.max(5, Math.min(newLeft, maxLeft - 5));
-        newTop = Math.max(5, Math.min(newTop, maxTop - 5));
-
-        chatPopup.style.left = `${newLeft}px`;
-        chatPopup.style.top = `${newTop}px`;
-    }
-
-    function onTouchEnd() {
-        isDragging = false;
-        document.removeEventListener("touchmove", onTouchMove);
-        document.removeEventListener("touchend", onTouchEnd);
-    }
-}
-
-// Jalankan fungsi setelah DOM dimuat
-document.addEventListener("DOMContentLoaded", () => {
-    makeAIChatDraggable();
-});
-});
-
-/* ============================================================
-   MAKE AI CHAT DRAGGABLE (ROBUST & TOUCH FRIENDLY)
-   ============================================================ */
-
-function initDraggableAIChat() {
-    let isDragging = false;
-    let startX = 0, startY = 0;
-    let initialLeft = 0, initialTop = 0;
-
-    // Helper untuk mengambil elemen popup
-    const getPopup = () => document.querySelector(".ai-popup-chat");
-
-    // ------------------------------------------------------------
-    // 1. MOUSE EVENTS (DESKTOP / LAPTOP)
-    // ------------------------------------------------------------
-    document.addEventListener("mousedown", (e) => {
-        const header = e.target.closest(".ai-chat-header");
-        const popup = getPopup();
-
-        if (!header || !popup) return;
-        if (e.target.closest(".ai-close-btn")) return; // Abaikan jika klik tombol close
-
-        isDragging = true;
-        popup.classList.add("is-dragged");
-
-        startX = e.clientX;
-        startY = e.clientY;
-
-        const rect = popup.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-
-        // Reset properti CSS posisi fixed kanan/bawah
-        popup.style.right = "auto";
-        popup.style.bottom = "auto";
-        popup.style.left = `${initialLeft}px`;
-        popup.style.top = `${initialTop}px`;
-
-        const onMouseMove = (moveEvent) => {
-            if (!isDragging) return;
-
-            const dx = moveEvent.clientX - startX;
-            const dy = moveEvent.clientY - startY;
-
-            let newLeft = initialLeft + dx;
-            let newTop = initialTop + dy;
-
-            // Batasi agar tidak keluar layar
-            const maxLeft = window.innerWidth - popup.offsetWidth;
-            const maxTop = window.innerHeight - popup.offsetHeight;
-
-            newLeft = Math.max(5, Math.min(newLeft, maxLeft - 5));
-            newTop = Math.max(5, Math.min(newTop, maxTop - 5));
-
-            popup.style.left = `${newLeft}px`;
-            popup.style.top = `${newTop}px`;
+            popup.style.right = "auto";
+            popup.style.bottom = "auto";
+            popup.style.left = `${initialLeft}px`;
+            popup.style.top = `${initialTop}px`;
         };
 
-        const onMouseUp = () => {
-            isDragging = false;
-            document.removeEventListener("mousemove", onMouseMove);
-            document.removeEventListener("mouseup", onMouseUp);
-        };
-
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-    });
-
-
-    // ------------------------------------------------------------
-    // 2. TOUCH EVENTS (MOBILE / TABLET)
-    // ------------------------------------------------------------
-    document.addEventListener("touchstart", (e) => {
-        const header = e.target.closest(".ai-chat-header");
-        const popup = getPopup();
-
-        if (!header || !popup) return;
-        if (e.target.closest(".ai-close-btn")) return;
-
-        isDragging = true;
-        popup.classList.add("is-dragged");
-
-        const touch = e.touches[0];
-        startX = touch.clientX;
-        startY = touch.clientY;
-
-        const rect = popup.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-
-        popup.style.right = "auto";
-        popup.style.bottom = "auto";
-        popup.style.left = `${initialLeft}px`;
-        popup.style.top = `${initialTop}px`;
-
-        const onTouchMove = (moveEvent) => {
+        const updatePosition = (clientX, clientY) => {
             if (!isDragging) return;
-            moveEvent.preventDefault(); // Mencegah halaman ter-scroll saat geser popup
+            const popup = getPopup();
+            if (!popup) return;
 
-            const moveTouch = moveEvent.touches[0];
-            const dx = moveTouch.clientX - startX;
-            const dy = moveTouch.clientY - startY;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
 
             let newLeft = initialLeft + dx;
             let newTop = initialTop + dy;
@@ -1001,20 +844,84 @@ function initDraggableAIChat() {
             popup.style.top = `${newTop}px`;
         };
 
-        const onTouchEnd = () => {
+        const stopDrag = () => {
+            if (!isDragging) return;
             isDragging = false;
-            document.removeEventListener("touchmove", onTouchMove);
-            document.removeEventListener("touchend", onTouchEnd);
+            const popup = getPopup();
+            if (popup) {
+                popup.classList.remove("is-dragging");
+            }
         };
 
-        document.addEventListener("touchmove", onTouchMove, { passive: false });
-        document.addEventListener("touchend", onTouchEnd);
-    });
-}
+        // --- MOUSE DRAG (DESKTOP) ---
+        document.addEventListener("mousedown", (e) => {
+            const popup = getPopup();
+            if (!popup) return;
 
-// Inisialisasi setelah seluruh dokumen siap
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initDraggableAIChat);
-} else {
+            const targetPopup = e.target.closest(".ai-popup-chat");
+            if (!targetPopup || e.target.closest(".ai-close-btn") || e.target.closest(".ai-icon-btn")) return;
+
+            const isHeader = !!e.target.closest(".ai-chat-header");
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+
+            if (isHeader || (tapLength < 350 && tapLength > 0)) {
+                if (e.target.tagName === 'INPUT' && !isHeader) return;
+
+                e.preventDefault();
+                startDrag(e.clientX, e.clientY, popup);
+                lastTapTime = 0;
+            } else {
+                lastTapTime = currentTime;
+            }
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                updatePosition(e.clientX, e.clientY);
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            stopDrag();
+        });
+
+        // --- TOUCH DRAG (MOBILE / HP) ---
+        document.addEventListener("touchstart", (e) => {
+            const popup = getPopup();
+            if (!popup) return;
+
+            const targetPopup = e.target.closest(".ai-popup-chat");
+            if (!targetPopup || e.target.closest(".ai-close-btn") || e.target.closest(".ai-icon-btn")) return;
+
+            const isHeader = !!e.target.closest(".ai-chat-header");
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+
+            if (isHeader || (tapLength < 350 && tapLength > 0)) {
+                if (e.target.tagName === 'INPUT' && !isHeader) return;
+
+                const touch = e.touches[0];
+                startDrag(touch.clientX, touch.clientY, popup);
+                lastTapTime = 0;
+            } else {
+                lastTapTime = currentTime;
+            }
+        });
+
+        document.addEventListener("touchmove", (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                updatePosition(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        document.addEventListener("touchend", () => {
+            stopDrag();
+        });
+    }
+
     initDraggableAIChat();
-}
+});

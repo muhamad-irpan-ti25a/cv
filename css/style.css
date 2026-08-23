@@ -2904,28 +2904,74 @@ body, .glass-card, .navbar, .holo-card, .btn-glass, .spatial-window {
     }
 }
 
+
 /* ============================================================
-   DRAGGABLE AI CHAT FIX
+   DRAGGABLE AI CHAT FIX & ENHANCEMENTS (FIXED)
    ============================================================ */
 
+/* Base Style Pop-up Chat */
 .ai-popup-chat {
-    touch-action: none;          /* Wajib untuk HP agar layar tidak ter-scroll saat geser */
-    user-select: none;           /* Mencegah teks terblok saat ditarik */
-    will-change: left, top;      /* Mengoptimalkan gerakan drag */
+    will-change: left, top;
 }
 
-/* Matikan animasi CSS bawaan jika posisi sudah diubah secara manual */
-.ai-popup-chat.is-dragged {
-    animation: none !important;
-    transition: none !important;
-}
-
-/* Header sebagai penarik (Drag Handle) */
+/* Hanya Header yang Menampilkan Kursor Geser (Grab) */
 .ai-chat-header {
-    cursor: move !important;
     cursor: grab !important;
+    user-select: none;
 }
 
 .ai-chat-header:active {
     cursor: grabbing !important;
+}
+
+/* Kursor Normal & Bisa Seleksi Teks Saat Berada di Area Obrolan & Input */
+.ai-chat-body,
+.ai-chat-footer,
+.ai-chat-footer input {
+    cursor: auto;
+    user-select: text;
+}
+
+/* Efek Visual HANYA SAAT Form Sedang Aktif Digeser */
+.ai-popup-chat.is-dragging {
+    cursor: grabbing !important;
+    box-shadow: 0 15px 40px rgba(0, 242, 254, 0.4) !important;
+    opacity: 0.95;
+    animation: none !important;
+    transition: none !important;
+    touch-action: none;
+}
+
+/* Matikan Interaksi Elemen Anak HANYA Saat Proses Menggeser Berlangsung */
+.ai-popup-chat.is-dragging * {
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
+
+/* ============================================================
+   PREVENT MOBILE AUTO-ZOOM ON INPUT
+   ============================================================ */
+
+/* Mencegah Zoom Otomatis pada Layar HP & Memastikan Input Responsif */
+.ai-chat-footer input,
+.ai-chat-footer input[type="text"] {
+    font-size: 16px !important; /* Minimal 16px mencegah auto-zoom di iOS/Android */
+    touch-action: manipulation;
+    pointer-events: auto !important; /* Memastikan input selalu bisa diklik & diketik */
+}
+
+.ai-chat-footer input::placeholder {
+    font-size: 0.85rem;
+}
+
+/* ============================================================
+   PREVENT CHAT FLICKER ON DRAG & TOGGLE
+   ============================================================ */
+
+/* Matikan animasi popup jika form sudah pernah digeser atau sedang aktif */
+.ai-popup-chat.is-dragging,
+.ai-popup-chat.is-dragged {
+    animation: none !important;
+    transition: none !important;
 }
