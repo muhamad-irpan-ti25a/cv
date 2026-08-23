@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificates - Portfolio</title>
+    
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- AOS Animation -->
@@ -11,7 +12,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
-    <!-- ANTI-FLASH SCRIPT (Taruh sebelum CSS) -->
+
+    <!-- ANTI-FLASH SCRIPT -->
     <script>
         (function() {
             const saved = localStorage.getItem('theme');
@@ -19,6 +21,7 @@
             document.documentElement.setAttribute('data-theme', saved || system);
         })();
     </script>
+
     <style>
         :root {
             --primary-glow: #00f2fe;
@@ -57,57 +60,80 @@
             margin-bottom: 2.5rem;
         }
 
+        /* SEARCH INPUT DENGAN IKON DI DALAM (DESAIN MODERN ELEGANT) */
         .search-wrapper {
             position: relative;
             width: 100%;
+            display: flex;
+            align-items: center;
         }
 
         .search-wrapper input {
             width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.75rem;
-            border-radius: 14px;
+            padding: 0.8rem 1.2rem 0.8rem 2.8rem; /* Padding kiri disiapkan untuk ikon */
+            border-radius: 25px;
             border: 1px solid var(--border-card);
-            background: var(--bg-card);
+            background: rgba(15, 23, 42, 0.8);
             color: #f8fafc;
             font-size: 0.9rem;
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             outline: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-wrapper input::placeholder {
+            color: #64748b;
         }
 
         .search-wrapper input:focus {
             border-color: var(--primary-glow);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.25), inset 0 0 10px rgba(0, 242, 254, 0.1);
         }
 
+        .search-wrapper [data-lucide],
         .search-wrapper i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #00f2fe;
-            width: 18px;
-            height: 18px;
+            position: absolute !important;
+            left: 1rem !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            color: #00f2fe !important;
+            width: 18px !important;
+            height: 18px !important;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .search-wrapper input:focus + [data-lucide] {
+            color: #ffffff !important;
         }
 
         .filter-tags, .sub-filter-tags {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.6rem;
             overflow-x: auto;
             max-width: 100%;
             padding-bottom: 4px;
+            scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-tags::-webkit-scrollbar,
+        .sub-filter-tags::-webkit-scrollbar {
+            display: none;
         }
 
         .sub-filter-tags {
             display: none;
-            padding-top: 0.5rem;
+            padding-top: 0.6rem;
             border-top: 1px dashed rgba(0, 242, 254, 0.2);
         }
 
         .tag-btn, .sub-tag-btn {
-            padding: 0.55rem 1.1rem;
-            border-radius: 12px;
+            padding: 0.55rem 1.2rem;
+            border-radius: 20px;
             border: 1px solid var(--border-card);
             background: var(--bg-card);
             color: #94a3b8;
@@ -121,8 +147,8 @@
 
         .sub-tag-btn {
             font-size: 0.775rem;
-            padding: 0.4rem 0.85rem;
-            border-radius: 8px;
+            padding: 0.4rem 0.9rem;
+            border-radius: 14px;
             background: rgba(15, 23, 42, 0.4);
         }
 
@@ -132,21 +158,21 @@
             color: #020617;
             font-weight: 600;
             border-color: transparent;
-            box-shadow: 0 4px 14px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 4px 14px rgba(0, 242, 254, 0.35);
         }
 
         /* Responsive Grid Layout */
         .cert-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.75rem;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.5rem;
         }
 
         /* Neo Glass Card */
         .cert-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -156,9 +182,9 @@
         }
 
         .cert-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             border-color: rgba(0, 242, 254, 0.6);
-            box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 254, 0.25);
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.5), 0 0 18px rgba(0, 242, 254, 0.2);
         }
 
         .cert-img-container {
@@ -177,33 +203,33 @@
         }
 
         .cert-card:hover .cert-img {
-            transform: scale(1.06);
+            transform: scale(1.05);
         }
 
         .cert-category-badge {
             position: absolute;
-            top: 12px;
-            left: 12px;
+            top: 10px;
+            left: 10px;
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid rgba(0, 242, 254, 0.4);
             color: #00f2fe;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.725rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
             backdrop-filter: blur(8px);
             text-transform: capitalize;
         }
 
         .cert-details {
-            padding: 1.25rem;
+            padding: 1.1rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
         .cert-details h3 {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #f8fafc;
             margin-bottom: 0.35rem;
@@ -211,10 +237,10 @@
         }
 
         .cert-details p {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #94a3b8;
-            line-height: 1.5;
-            margin-bottom: 1.25rem;
+            line-height: 1.45;
+            margin-bottom: 1.1rem;
             flex-grow: 1;
         }
 
@@ -223,12 +249,12 @@
             align-items: center;
             justify-content: space-between;
             border-top: 1px solid rgba(0, 242, 254, 0.15);
-            padding-top: 0.85rem;
+            padding-top: 0.75rem;
             margin-top: auto;
         }
 
         .cert-info-meta {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #00f2fe;
             display: flex;
             align-items: center;
@@ -237,12 +263,12 @@
         }
 
         .btn-view-cert {
-            background: rgba(0, 242, 254, 0.12);
+            background: rgba(0, 242, 254, 0.1);
             border: 1px solid rgba(0, 242, 254, 0.3);
             color: #00f2fe;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 10px;
-            font-size: 0.775rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
@@ -255,10 +281,10 @@
             background: linear-gradient(135deg, var(--primary-glow), var(--accent-glow));
             color: #020617;
             border-color: transparent;
-            box-shadow: 0 4px 12px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 242, 254, 0.35);
         }
 
-        /* Modal Preview */
+        /* Modal Preview Lightbox */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -327,9 +353,14 @@
     </style>
 </head>
 <body>
+    <!-- BACKGROUND CANVAS -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- NAVBAR FLOATING LENGKAP -->
     <nav class="navbar">
         <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
-        <ul class="nav-links">
+        
+        <ul class="nav-links" id="navLinks">
             <li><a href="index.html"><i data-lucide="home"></i> Home & About</a></li>
             <li><a href="skills.html"><i data-lucide="code-2"></i> Skills</a></li>
             <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
@@ -337,8 +368,24 @@
             <li><a href="videos.html"><i data-lucide="video"></i> Videos</a></li>
             <li><a href="blog.html"><i data-lucide="newspaper"></i> Blog</a></li>
         </ul>
+
+        <div class="nav-actions">
+            <!-- Tombol Theme Toggle -->
+            <button id="themeToggle" class="theme-toggle-btn" aria-label="Ganti Tema">
+                <div class="theme-icon-wrapper">
+                    <i data-lucide="sun" class="theme-icon sun-icon"></i>
+                    <i data-lucide="moon" class="theme-icon moon-icon"></i>
+                </div>
+            </button>
+
+            <!-- Tombol Mobile Menu Toggle -->
+            <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Buka Menu">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </nav>
 
+    <!-- MAIN CONTAINER -->
     <main class="page-container container">
         <!-- Header -->
         <div class="cert-header" data-aos="fade-down">
@@ -348,9 +395,10 @@
 
         <!-- Search & Dual Filter Controls -->
         <div class="cert-toolbar" data-aos="fade-up">
+            <!-- SEARCH INPUT BAGUS DENGAN IKON DI DALAM -->
             <div class="search-wrapper">
-                <i data-lucide="search"></i>
                 <input type="text" id="certSearch" placeholder="Cari berdasarkan nama sertifikat atau kategori...">
+                <i data-lucide="search"></i>
             </div>
 
             <!-- Filter Level 1 (Kategori Utama) -->
@@ -425,15 +473,15 @@
             <!-- 4: 1 (4).JPG -->
             <div class="cert-card glass-card" data-cat="school" data-sub="PASKIBRA" data-aos="zoom-in">
                 <div class="cert-img-container">
-                    <img src="assets/sertifikat/1 (4).JPG" alt="PASKIBRA Kec. Lemgkong 2024" class="cert-img" loading="lazy">
+                    <img src="assets/sertifikat/1 (4).JPG" alt="PASKIBRA Kec. Lengkong 2024" class="cert-img" loading="lazy">
                     <span class="cert-category-badge">School</span>
                 </div>
                 <div class="cert-details">
-                    <h3>Duta Hukum Dan HAM Jawa Barat 2024</h3>
+                    <h3>PASKIBRA Kec. Lengkong 2024</h3>
                     <p>School – PASKIBRA – Kecamatan</p>
                     <div class="cert-card-footer">
                         <span class="cert-info-meta"><i data-lucide="tag"></i> PASKIBRA</span>
-                        <button class="btn-view-cert" data-img="assets/sertifikat/1 (4).JPG" data-title="PASKIBRA Kec. Lemgkong 2024" data-cat="School – PASKIBRA">
+                        <button class="btn-view-cert" data-img="assets/sertifikat/1 (4).JPG" data-title="PASKIBRA Kec. Lengkong 2024" data-cat="School – PASKIBRA">
                             <i data-lucide="eye"></i> Detail
                         </button>
                     </div>
@@ -530,7 +578,7 @@
                 </div>
             </div>
 
-            <!-- 10: Muhamad-Irpan-Belajar-Cyber-Security... -->
+            <!-- 10: Cyber Security -->
             <div class="cert-card glass-card" data-cat="kursus" data-sub="CySec-Dasar" data-aos="zoom-in">
                 <div class="cert-img-container">
                     <img src="assets/sertifikat/Muhamad-Irpan-Belajar-Cyber-Security-dari-Nol-Sertifikat-Cyber-Security-Dasar-LMS-ID-Networkers_001.png" alt="Kursus Cyber Security Dasar" class="cert-img" loading="lazy">
@@ -541,14 +589,14 @@
                     <p>Kursus</p>
                     <div class="cert-card-footer">
                         <span class="cert-info-meta"><i data-lucide="tag"></i> CySec-Dasar</span>
-                        <button class="btn-view-cert" data-img="assets/sertifikat/Muhamad-Irpan-Belajar-Cyber-Security-dari-Nol-Sertifikat-Cyber-Security-Dasar-LMS-ID-Networkers_001.png" data-title="Kursus" data-cat="Cyber Security Dasar">
+                        <button class="btn-view-cert" data-img="assets/sertifikat/Muhamad-Irpan-Belajar-Cyber-Security-dari-Nol-Sertifikat-Cyber-Security-Dasar-LMS-ID-Networkers_001.png" data-title="Kursus Cyber Security" data-cat="Cyber Security Dasar">
                             <i data-lucide="eye"></i> Detail
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- 11: Muhamad-Irpan-Belajar-Linux... -->
+            <!-- 11: Linux Dasar -->
             <div class="cert-card glass-card" data-cat="kursus" data-sub="Linux" data-aos="zoom-in">
                 <div class="cert-img-container">
                     <img src="assets/sertifikat/Muhamad-Irpan-Belajar-Linux-dari-Nol-Sertifikat-Belajar-Linux-dari-Nol-LMS-ID-Networkers_001.png" alt="Kursus Linux Dasar" class="cert-img" loading="lazy">
@@ -559,7 +607,7 @@
                     <p>Kursus</p>
                     <div class="cert-card-footer">
                         <span class="cert-info-meta"><i data-lucide="tag"></i> Linux</span>
-                        <button class="btn-view-cert" data-img="assets/sertifikat/Muhamad-Irpan-Belajar-Linux-dari-Nol-Sertifikat-Belajar-Linux-dari-Nol-LMS-ID-Networkers_001.png" data-title="Kursus" data-cat="Linux Dasar">
+                        <button class="btn-view-cert" data-img="assets/sertifikat/Muhamad-Irpan-Belajar-Linux-dari-Nol-Sertifikat-Belajar-Linux-dari-Nol-LMS-ID-Networkers_001.png" data-title="Kursus Linux" data-cat="Linux Dasar">
                             <i data-lucide="eye"></i> Detail
                         </button>
                     </div>
@@ -585,6 +633,7 @@
         </div>
     </div>
 
+    <!-- CONTAINER WIDGET AI UNTUK DI-INJECT OLEH AI-ASSISTANT.JS -->
     <div id="aiWidgetContainer"></div>
 
     <!-- Scripts -->
@@ -605,6 +654,19 @@
         let activeSubFilter = "all";
 
         document.addEventListener("DOMContentLoaded", () => {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({ duration: 800, once: true });
+            }
+
+            if (typeof VanillaTilt !== 'undefined') {
+                VanillaTilt.init(document.querySelectorAll(".glass-card"), {
+                    max: 8,
+                    speed: 400,
+                    glare: true,
+                    "max-glare": 0.15
+                });
+            }
+
             if (typeof lucide !== 'undefined') lucide.createIcons();
 
             const mainFilterBtns = document.querySelectorAll("#mainFilterTags .tag-btn");
@@ -682,7 +744,9 @@
                 });
             });
 
-            searchInput.addEventListener("input", applyFiltering);
+            if (searchInput) {
+                searchInput.addEventListener("input", applyFiltering);
+            }
 
             // Modal Lightbox Logic
             const modal = document.getElementById("certModal");
@@ -700,10 +764,15 @@
                 });
             });
 
-            modalClose.addEventListener("click", () => modal.classList.remove("active"));
-            modal.addEventListener("click", (e) => {
-                if (e.target === modal) modal.classList.remove("active");
-            });
+            if (modalClose) {
+                modalClose.addEventListener("click", () => modal.classList.remove("active"));
+            }
+
+            if (modal) {
+                modal.addEventListener("click", (e) => {
+                    if (e.target === modal) modal.classList.remove("active");
+                });
+            }
         });
     </script>
 </body>

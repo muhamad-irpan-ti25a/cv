@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog & Catatan - Web Portfolio</title>
 
+    <!-- Anti-Flash Script (Deteksi Tema Sistem/Storage) -->
     <script>
         (function() {
             const saved = localStorage.getItem('theme');
@@ -13,400 +14,302 @@
         })();
     </script>
 
+    <!-- Lucide Icons & CSS Utama -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
 
     <style>
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
+        /* Format Rata Kanan-Kiri (Justify) Khusus Artikel Blog */
+        .blog-card-excerpt,
+        .post-prose,
+        .post-prose p,
+        .post-prose div {
+            text-align: justify;
+            text-justify: inter-word;
         }
 
-        [data-aos] {
-            opacity: 1 !important;
-            transform: none !important;
-            transition: none !important;
-            animation: none !important;
+        .post-prose h2, 
+        .post-prose h3, 
+        .post-prose h5,
+        .post-prose h7 {
+            text-align: left;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
         }
 
-        /* ============================================================
-           GRID & CARD BLOG BASE STYLE
-           ============================================================ */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            contain: layout paint;
-            min-height: 400px;
-        }
-
-        .blog-card {
-            display: flex;
-            flex-direction: column;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(0, 242, 254, 0.15);
-            border-radius: 16px;
-            overflow: hidden;
-            will-change: transform;
-            transform: translateZ(0); 
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease !important;
-        }
-
-        .blog-card:hover {
-            transform: translateY(-4px) translateZ(0);
-            border-color: #00f2fe;
-        }
-
+        /* Styling Toolbar Search & Chips */
         .blog-toolbar {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        /* ============================================================
-           KOLOM PENCARIAN & IKON PENCARI DI DALAM INPUT
-           ============================================================ */
         .blog-search-box {
             position: relative;
             flex: 1;
-            min-width: 260px;
-            max-width: 400px;
+            min-width: 220px;
+            max-width: 360px;
             display: flex;
             align-items: center;
         }
 
         .blog-search-box input {
             width: 100%;
-            padding: 10px 16px 10px 42px;
+            padding: 8px 14px 8px 38px;
             background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 20px;
-            color: inherit;
-            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            color: var(--text-color);
+            font-size: 0.85rem;
             outline: none;
             transition: border-color 0.2s ease;
         }
 
         .blog-search-box input:focus {
-            border-color: #00f2fe;
+            border-color: var(--primary-color);
         }
 
-        .blog-search-box i,
-        .blog-search-box svg,
         .blog-search-box [data-lucide] {
             position: absolute !important;
-            left: 14px !important;
+            left: 12px !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            color: #94a3b8 !important;
-            width: 18px !important;
-            height: 18px !important;
+            color: var(--text-dim) !important;
+            width: 16px !important;
+            height: 16px !important;
             pointer-events: none;
         }
 
-        /* ============================================================
-           CATEGORIES / CHIPS
-           ============================================================ */
         .blog-categories {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
-            padding-bottom: 6px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            padding-bottom: 4px;
+            scrollbar-width: none;
         }
 
         .blog-categories::-webkit-scrollbar {
-            display: none; /* Chrome & Safari */
+            display: none;
         }
 
         .blog-chip {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: inherit;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.82rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 0.78rem;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.2s ease;
         }
 
         .blog-chip.active {
-            background: #00f2fe;
-            color: #020617;
-            border-color: #00f2fe;
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
             font-weight: 600;
         }
 
-        .blog-card-body {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        /* ============================================================
-           IMAM / THUMBNAIL
-           ============================================================ */
-        .thumb {
-            display: block;
-            width: 100%;
-            height: 200px;
-            aspect-ratio: 16 / 9;
-            background: rgba(255, 255, 255, 0.05);
-            overflow: hidden;
-        }
-
-        .blog-card-thumb {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            opacity: 0;
-            animation: fadeInImg 0.3s ease-in-out forwards;
-        }
-
-        @keyframes fadeInImg {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* ============================================================
-           META INFO
-           ============================================================ */
-        .blog-meta, #postMeta {
-            font-size: 0.82rem;
-            color: #00f2fe;
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px 12px;
-            line-height: 1;
-        }
-
-        .blog-meta span, #postMeta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .blog-meta svg, #postMeta svg,
-        .blog-meta [data-lucide], #postMeta [data-lucide] {
-            width: 14px !important;
-            height: 14px !important;
-            display: inline-block;
-            vertical-align: middle;
-            flex-shrink: 0;
-        }
-
-        .blog-card-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 10px;
-            color: #f8fafc;
-        }
-
-        .blog-card-excerpt {
-            font-size: 0.88rem;
-            color: #94a3b8;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            flex-grow: 1;
-        }
-
-        .blog-card-footer {
-            margin-top: auto;
-        }
-
-        .blog-read-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #00f2fe;
-            font-weight: 600;
-            font-size: 0.88rem;
-            text-decoration: none;
-        }
-
-        /* ============================================================
-           DETAIL ARTIKEL
-           ============================================================ */
+        /* Detail Artikel Wrap */
         .post-detail-wrapper {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 20px;
-            padding: 28px;
-            max-width: 900px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 850px;
             margin: 0 auto;
         }
 
         .back-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: #00f2fe;
+            gap: 6px;
+            color: var(--primary-color);
             background: rgba(0, 242, 254, 0.1);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            padding: 8px 16px;
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 10px;
             text-decoration: none;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
         }
 
         .post-detail-cover {
             width: 100%;
-            max-height: 420px;
+            max-height: 380px;
             object-fit: cover;
-            border-radius: 14px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .post-prose {
-            line-height: 1.8;
-            color: #cbd5e1;
-            font-size: 0.98rem;
-        }
-
-        .post-prose h2 { font-size: 1.5rem; color: #00f2fe; }
-        .post-prose h3 { font-size: 1.3rem; color: #f8fafc; }
-        .post-prose h5 { font-size: 1.1rem; color: #38bdf8; }
-        .post-prose p { margin-bottom: 16px; word-break: break-word; }
-
-        .post-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .post-tag-item {
-            background: rgba(0, 242, 254, 0.1);
-            color: #00f2fe;
-            padding: 4px 12px;
             border-radius: 12px;
-            font-size: 0.8rem;
+            margin: 16px 0;
+            border: 1px solid var(--border-color);
         }
 
         .pagination-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            margin-top: 32px;
+            gap: 6px;
+            margin-top: 24px;
         }
 
-        .page-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: inherit;
-            padding: 8px 14px;
-            border-radius: 8px;
-            cursor: pointer;
+        /* GRID & CARD BLOG STYLING */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
         }
 
-        /* ============================================================
-           MEDIA QUERIES (CSS RESPONSIF HP & TABLET)
-           ============================================================ */
-        
-        /* 1. Tablet (Maksimal 768px) */
-        @media (max-width: 768px) {
+        .blog-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 16px rgba(0, 242, 254, 0.12);
+        }
+
+        .blog-card-thumb-wrapper,
+        .thumb {
+            position: relative;
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .blog-card-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .blog-card:hover .blog-card-thumb {
+            transform: scale(1.04);
+        }
+
+        .blog-card-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .blog-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .blog-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .blog-meta [data-lucide] {
+            width: 12px !important;
+            height: 12px !important;
+        }
+
+        .blog-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--text-color);
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s ease;
+        }
+
+        .blog-card:hover .blog-card-title {
+            color: var(--primary-color);
+        }
+
+        .blog-card-excerpt {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+            margin-bottom: 10px;
+            flex-grow: 1;
+            text-align: justify;
+            text-justify: inter-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-card-footer {
+            margin-top: auto;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .blog-read-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: gap 0.2s ease;
+        }
+
+        .blog-read-btn [data-lucide] {
+            width: 12px !important;
+            height: 12px !important;
+        }
+
+        .blog-card:hover .blog-read-btn {
+            gap: 6px;
+        }
+
+        @media (max-width: 600px) {
             .blog-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 16px;
-            }
-
-            .blog-toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .blog-search-box {
-                max-width: 100%;
-                width: 100%;
-            }
-
-            .blog-categories {
-                width: 100%;
-            }
-
-            .post-detail-wrapper {
-                padding: 20px;
-                border-radius: 16px;
-            }
-
-            .post-prose h2 { font-size: 1.3rem; }
-            .post-prose h3 { font-size: 1.15rem; }
-        }
-
-        /* 2. Smartphone / HP (Maksimal 480px) */
-        @media (max-width: 480px) {
-            .page-title {
-                font-size: 1.4rem;
-            }
-
-            .blog-grid {
-                grid-template-columns: 1fr; /* 1 Kartu per baris di HP */
-            }
-
-            .thumb {
-                height: 180px;
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
 
             .blog-card-body {
-                padding: 16px;
-            }
-
-            .blog-card-title {
-                font-size: 1.05rem;
-            }
-
-            .blog-card-excerpt {
-                font-size: 0.85rem;
-            }
-
-            .post-detail-wrapper {
-                padding: 16px;
-            }
-
-            #postTitle {
-                font-size: 1.4rem !important;
-            }
-
-            .post-detail-cover {
-                max-height: 250px;
-                margin: 14px 0;
-            }
-
-            .pagination-container {
-                flex-direction: row;
-                gap: 6px;
-                font-size: 0.8rem;
-            }
-
-            .page-btn {
-                padding: 6px 10px;
-                font-size: 0.8rem;
+                padding: 10px 12px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- BACKGROUND CANVAS -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- NAVBAR RESMI -->
     <nav class="navbar">
         <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
-        <ul class="nav-links">
+        
+        <ul class="nav-links" id="navLinks">
             <li><a href="index.html"><i data-lucide="home"></i> Home & About</a></li>
             <li><a href="skills.html"><i data-lucide="code-2"></i> Skills</a></li>
             <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
@@ -414,8 +317,22 @@
             <li><a href="videos.html"><i data-lucide="video"></i> Videos</a></li>
             <li><a href="blog.html" class="active"><i data-lucide="newspaper"></i> Blog</a></li>
         </ul>
+
+        <div class="nav-actions">
+            <button id="themeToggle" class="theme-toggle-btn" aria-label="Ganti Tema">
+                <div class="theme-icon-wrapper">
+                    <i data-lucide="sun" class="theme-icon sun-icon"></i>
+                    <i data-lucide="moon" class="theme-icon moon-icon"></i>
+                </div>
+            </button>
+
+            <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Buka Menu">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </nav>
 
+    <!-- MAIN CONTAINER -->
     <main class="page-container container">
         <section id="homeView">
             <h1 class="page-title"><i data-lucide="newspaper"></i> Catatan & Artikel Blog</h1>
@@ -435,19 +352,24 @@
         <section id="postView" style="display: none;">
             <a href="#" class="back-btn"><i data-lucide="arrow-left"></i> Kembali ke Daftar Artikel</a>
             <article class="post-detail-wrapper">
-                <h1 id="postTitle" style="font-size: 1.8rem; color: #f8fafc; line-height: 1.3;"></h1>
-                <div class="blog-meta" style="margin-top: 12px;" id="postMeta"></div>
+                <h1 id="postTitle" style="font-size: 1.6rem; color: var(--text-color); line-height: 1.3;"></h1>
+                <div class="blog-meta" style="margin-top: 10px; color: var(--primary-color);" id="postMeta"></div>
                 <img id="postCover" class="post-detail-cover" src="" alt="Cover Artikel">
-                <div class="post-prose" id="postBody"></div>
-                <div class="post-tags" id="postTags"></div>
+                <div class="post-prose" id="postBody" style="color: var(--text-dim); line-height: 1.7;"></div>
+                <div class="post-tags" id="postTags" style="display:flex; gap:6px; margin-top:20px;"></div>
             </article>
         </section>
     </main>
 
+    <!-- CONTAINER WIDGET AI UNTUK DI-INJECT OLEH AI-ASSISTANT.JS -->
     <div id="aiWidgetContainer"></div>
 
-    <script src="js/ai-assistant.js"></script>
+    <!-- JAVASCRIPT KONEKSI -->
+    <script src="js/main.js"></script>
     <script src="js/blog/blog-data.js"></script>
     <script src="js/blog/blog.js"></script>
+    
+    <!-- SCRIPT UTAMA AI ASSISTANT -->
+    <script src="js/ai-assistant.js"></script>
 </body>
 </html>

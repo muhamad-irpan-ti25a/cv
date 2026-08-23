@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Tugas Kuliah - Web Portfolio</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/components.css">
-    <!-- ANTI-FLASH SCRIPT (Taruh sebelum CSS) -->
+    <title>Video & Tugas - Web Portfolio</title>
+
+    <!-- Anti-Flash Script (Deteksi Tema Sistem/Storage) -->
     <script>
         (function() {
             const saved = localStorage.getItem('theme');
@@ -16,11 +13,162 @@
             document.documentElement.setAttribute('data-theme', saved || system);
         })();
     </script>
+
+    <!-- Lucide Icons & CSS Utama -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <style>
+        /* Styling Toolbar Search Video */
+        .video-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .video-search-box {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+            max-width: 360px;
+            display: flex;
+            align-items: center;
+        }
+
+        .video-search-box input {
+            width: 100%;
+            padding: 8px 14px 8px 38px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .video-search-box input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .video-search-box [data-lucide] {
+            position: absolute !important;
+            left: 12px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            color: var(--text-dim) !important;
+            width: 16px !important;
+            height: 16px !important;
+            pointer-events: none;
+        }
+
+        /* Grid Video Cards Compact */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+            min-height: 350px;
+        }
+
+        .video-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.12);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-card-body {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .video-card-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--text-color);
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s ease;
+        }
+
+        .video-card:hover .video-card-title {
+            color: var(--primary-color);
+        }
+
+        .video-card-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.45;
+            margin: 0;
+            text-align: justify;
+            text-justify: inter-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Penyesuaian Responsif HP */
+        @media (max-width: 600px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .video-card-body {
+                padding: 12px 14px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- BACKGROUND CANVAS -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- NAVBAR RESMI SAMA PERSIS DENGAN BLOG.HTML -->
     <nav class="navbar">
         <a href="index.html" class="nav-brand"><i data-lucide="terminal"></i> Dev<span>Portfolio</span></a>
-        <ul class="nav-links">
+        
+        <ul class="nav-links" id="navLinks">
             <li><a href="index.html"><i data-lucide="home"></i> Home & About</a></li>
             <li><a href="skills.html"><i data-lucide="code-2"></i> Skills</a></li>
             <li><a href="projects.html"><i data-lucide="folder-git-2"></i> Projects</a></li>
@@ -28,27 +176,199 @@
             <li><a href="videos.html" class="active"><i data-lucide="video"></i> Videos</a></li>
             <li><a href="blog.html"><i data-lucide="newspaper"></i> Blog</a></li>
         </ul>
+
+        <div class="nav-actions">
+            <!-- Tombol Theme Toggle Memakai ID & Struktur Bawaan main.js -->
+            <button id="themeToggle" class="theme-toggle-btn" aria-label="Ganti Tema">
+                <div class="theme-icon-wrapper">
+                    <i data-lucide="sun" class="theme-icon sun-icon"></i>
+                    <i data-lucide="moon" class="theme-icon moon-icon"></i>
+                </div>
+            </button>
+
+            <!-- Tombol Mobile Menu Toggle Bawaan main.js -->
+            <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Buka Menu">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </nav>
 
+    <!-- MAIN CONTAINER -->
     <main class="page-container container">
-        <h1 class="page-title" data-aos="fade-down"><i data-lucide="video"></i> Video Tugas Kuliah</h1>
+        <section id="homeView">
+            <h1 class="page-title"><i data-lucide="video"></i> Koleksi & Dokumentasi Video</h1>
 
-        <div class="video-grid">
-            <div class="video-card glass-card" data-aos="fade-up">
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Video Tugas" allowfullscreen></iframe>
-                </div>
-                <div class="video-info">
-                    <h3>Presentasi Matkul Pemrograman Web</h3>
-                    <p>Demonstrasi aplikasi web responsif dan arsitektur database sederhana.</p>
+            <!-- TOOLBAR SEARCH -->
+            <div class="video-toolbar">
+                <div class="video-search-box">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="searchInput" placeholder="Cari judul atau topik video...">
                 </div>
             </div>
-        </div>
+
+            <!-- GRID CONTAINER VIDEO -->
+            <div class="video-grid" id="videoContainer"></div>
+        </section>
     </main>
 
+    <!-- CONTAINER WIDGET AI UNTUK DI-INJECT OLEH AI-ASSISTANT.JS -->
     <div id="aiWidgetContainer"></div>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- JAVASCRIPT KONEKSI -->
     <script src="js/main.js"></script>
     <script src="js/ai-assistant.js"></script>
+
+    <!-- SCRIPT DATA & RENDER VIDEO -->
+    <script>
+        const videos = [
+            {
+                title: "Logika Informatika: Inferensi Logika",
+                url: "https://www.youtube.com/embed/AA8RSPOYqYs",
+                desc: "Presentasi Tugas Kelompok 1 Mata Kuliah Logika Informatika mengenai materi Inferensi Logika."
+            },
+            {
+                title: "Dokumentasi Kenangan Sekolah: Hari Senin & Hujan",
+                url: "https://www.youtube.com/embed/254CrY-6Q_I",
+                desc: "Video kenangan momen sebelum kelulusan sekolah, upacara bendera, dan suasana hujan."
+            },
+            {
+                title: "Film Pendek: Keterlambatan",
+                url: "https://www.youtube.com/embed/SgG16jrXuaI",
+                desc: "Karya Film Pendek hasil produksi siswa XII TKJ 1 SMK Harapan Bangsa Bojonghaur."
+            },
+            {
+                title: "Ujian Praktik Kimia XII TKJ 1",
+                url: "https://www.youtube.com/embed/2DrCTR1ljdA",
+                desc: "Dokumentasi pelaksanaan Ujian Praktik Kimia Kelompok 1 XII TKJ 1 SMK Harapan Bangsa."
+            },
+            {
+                title: "Praktik PAI: Mengkafani Jenazah",
+                url: "https://www.youtube.com/embed/g2d1yoBlZLE",
+                desc: "Praktik tata cara mengkafani jenazah pada pelajaran Pendidikan Agama Islam kelas XII TKJ 1."
+            },
+            {
+                title: "Eksperimen Kimia: Membuat Lampu Lava Sederhana",
+                url: "https://www.youtube.com/embed/d9R_ptbD0JQ",
+                desc: "Pengujian konsep perbedaan massa jenis zat cair dan reaksi kimia dalam pembuatan lampu lava."
+            },
+            {
+                title: "Cinematic Video Project",
+                url: "https://www.youtube.com/embed/SOqHIUPYClE",
+                desc: "Karya video cinematic dengan teknik pengambilan gambar dan color grading khusus."
+            },
+            {
+                title: "Video Motivasi Kuliah",
+                url: "https://www.youtube.com/embed/tpth_n0kT8g",
+                desc: "Video inspiratif mengenai semangat dan motivasi dalam menempuh pendidikan di perguruan tinggi."
+            },
+            {
+                title: "Live Cinematic Experience",
+                url: "https://www.youtube.com/embed/rjA8FRY_Fl8",
+                desc: "Pengambilan gambar video secara live dengan nuansa visual sinematik."
+            },
+            {
+                title: "Galau Dikit - Short Video Visual",
+                url: "https://www.youtube.com/embed/XHc0MTNd-ls",
+                desc: "Karya konten visual pendek bernuansa estetis dan emosional."
+            },
+            {
+                title: "Live in Cinematic Moments",
+                url: "https://www.youtube.com/embed/4wkqfvzy1f8",
+                desc: "Dokumentasi momen kehidupan sehari-hari yang dikemas secara sinematik."
+            },
+            {
+                title: "Trailer Film Pendek: Aironix Kelompok 7",
+                url: "https://www.youtube.com/embed/LfEYbrzlGvE",
+                desc: "Trailer resmi film pendek pengenalan Kelompok 7 [AIRONIX] HAKRAB Teknik Informatika Nusa Putra."
+            },
+            {
+                title: "Film Pendek: Pengenalan Kelompok 7 [AIRONIX]",
+                url: "https://www.youtube.com/embed/Xp1_Vj2ESq0",
+                desc: "Film pendek lengkap karya Kelompok 7 AIRONIX untuk kegiatan HAKRAB Teknik Informatika."
+            },
+            {
+                title: "Tugas UTS Algoritma & Struktur Data",
+                url: "https://www.youtube.com/embed/evHwThQ-n3o",
+                desc: "Presentasi proyek tugas UTS mata kuliah Algoritma dan Struktur Data di Universitas Nusa Putra."
+            },
+            {
+                title: "Pendakian Gunung Gede Pangrango (4 Mei 2026)",
+                url: "https://www.youtube.com/embed/RySI5OYkArA",
+                desc: "Dokumentasi perjalanan pendakian Gunung Gede Pangrango sebagai bentuk refleksi Amor Conservis."
+            },
+            {
+                title: "Presentasi Aljabar Linier: Matriks",
+                url: "https://www.youtube.com/embed/LbyhsspBpuM",
+                desc: "Presentasi essay mata kuliah Aljabar Linier yang membahas konsep dan operasi Matriks."
+            },
+            {
+                title: "English Presentation: Job Interview Practice",
+                url: "https://www.youtube.com/embed/jwE8BaJzEwI",
+                desc: "English Group Presentation for Job Interview Roleplay Practice (Group 6)."
+            },
+            {
+                title: "Sistem Operasi: Penjadwalan CPU",
+                url: "https://www.youtube.com/embed/PBLg2Pc7FII",
+                desc: "Presentasi kelompok mata kuliah Sistem Operasi tentang algoritma Penjadwalan CPU."
+            },
+            {
+                title: "Sistem Operasi: Manajemen Proses",
+                url: "https://www.youtube.com/embed/1u7XOCHA9Dk",
+                desc: "Presentasi Kelompok 1 mengenai konsep dasar dan implementasi Manajemen Proses pada Sistem Operasi."
+            },
+            {
+                title: "English Conversation: Introducing to Senior Employee",
+                url: "https://www.youtube.com/embed/1u7XOCHA9Dk",
+                desc: "Practice English dialogue for introducing oneself to a senior employee in a professional setup."
+            }
+        ];
+
+        const videoContainer = document.getElementById("videoContainer");
+
+        function renderVideos(list) {
+            if (!videoContainer) return;
+            videoContainer.innerHTML = "";
+
+            if (list.length === 0) {
+                videoContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-dim); padding:40px;">Video tidak ditemukan.</div>`;
+                return;
+            }
+
+            list.forEach(v => {
+                const card = document.createElement("div");
+                card.className = "video-card";
+                card.innerHTML = `
+                    <div class="video-wrapper">
+                        <iframe src="${v.url}" title="${v.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    <div class="video-card-body">
+                        <h3 class="video-card-title">${v.title}</h3>
+                        <p class="video-card-desc">${v.desc}</p>
+                    </div>
+                `;
+                videoContainer.appendChild(card);
+            });
+
+            if (typeof lucide !== "undefined") {
+                lucide.createIcons();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderVideos(videos);
+
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) {
+                searchInput.addEventListener("input", (e) => {
+                    const keyword = e.target.value.toLowerCase().trim();
+                    const filtered = videos.filter(v => 
+                        v.title.toLowerCase().includes(keyword) || 
+                        v.desc.toLowerCase().includes(keyword)
+                    );
+                    renderVideos(filtered);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
