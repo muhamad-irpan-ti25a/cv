@@ -105,7 +105,7 @@ function renderGrid() {
   grid.innerHTML = items.map((p) => `
     <article class="blog-card">
       <a href="#post/${p.id}" class="thumb">
-        <img class="blog-card-thumb" src="${p.cover}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/400x200?text=Blog+Cover'">
+        <img class="blog-card-thumb" src="${p.cover}" alt="${p.title}" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/400x200?text=Blog+Cover'">
       </a>
       <div class="blog-card-body">
         <div class="blog-meta">
@@ -196,6 +196,8 @@ function renderPost(id) {
 
   const coverEl = el("#postCover");
   if (coverEl) {
+    coverEl.loading = "lazy";
+    coverEl.decoding = "async";
     coverEl.src = p.cover;
     coverEl.onerror = () => {
       coverEl.src = "https://via.placeholder.com/800x400?text=Blog+Cover";
