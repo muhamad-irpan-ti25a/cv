@@ -11,7 +11,14 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
-
+    <!-- ANTI-FLASH SCRIPT (Taruh sebelum CSS) -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('theme');
+            const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', saved || system);
+        })();
+    </script>
     <style>
         :root {
             --primary-glow: #00f2fe;

@@ -766,4 +766,255 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
+    /* ============================================================
+   MAKE AI CHAT DRAGGABLE (TOUCH & MOUSE DRAG)
+   ============================================================ */
+
+function makeAIChatDraggable() {
+    const chatPopup = document.querySelector(".ai-popup-chat");
+    const chatHeader = document.querySelector(".ai-chat-header");
+
+    if (!chatPopup || !chatHeader) return;
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    // --- 1. MOUSE EVENTS (DESKTOP) ---
+    chatHeader.addEventListener("mousedown", (e) => {
+        // Abaikan jika yang diklik adalah tombol close
+        if (e.target.closest(".ai-close-btn")) return;
+
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const rect = chatPopup.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        // Ubah style position menjadi absolut terhadap viewport
+        chatPopup.style.right = "auto";
+        chatPopup.style.bottom = "auto";
+        chatPopup.style.left = `${initialLeft}px`;
+        chatPopup.style.top = `${initialTop}px`;
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+    });
+
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newLeft = initialLeft + dx;
+        let newTop = initialTop + dy;
+
+        // Batasi agar tidak keluar dari layar (Boundaries)
+        const maxLeft = window.innerWidth - chatPopup.offsetWidth;
+        const maxTop = window.innerHeight - chatPopup.offsetHeight;
+
+        newLeft = Math.max(10, Math.min(newLeft, maxLeft - 10));
+        newTop = Math.max(10, Math.min(newTop, maxTop - 10));
+
+        chatPopup.style.left = `${newLeft}px`;
+        chatPopup.style.top = `${newTop}px`;
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+    }
+
+    // --- 2. TOUCH EVENTS (MOBILE / HP) ---
+    chatHeader.addEventListener("touchstart", (e) => {
+        if (e.target.closest(".ai-close-btn")) return;
+
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+
+        const rect = chatPopup.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        chatPopup.style.right = "auto";
+        chatPopup.style.bottom = "auto";
+        chatPopup.style.left = `${initialLeft}px`;
+        chatPopup.style.top = `${initialTop}px`;
+
+        document.addEventListener("touchmove", onTouchMove, { passive: false });
+        document.addEventListener("touchend", onTouchEnd);
+    });
+
+    function onTouchMove(e) {
+        if (!isDragging) return;
+        e.preventDefault(); // Mencegah scrolling layar saat menggeser chat
+
+        const touch = e.touches[0];
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+
+        let newLeft = initialLeft + dx;
+        let newTop = initialTop + dy;
+
+        const maxLeft = window.innerWidth - chatPopup.offsetWidth;
+        const maxTop = window.innerHeight - chatPopup.offsetHeight;
+
+        newLeft = Math.max(5, Math.min(newLeft, maxLeft - 5));
+        newTop = Math.max(5, Math.min(newTop, maxTop - 5));
+
+        chatPopup.style.left = `${newLeft}px`;
+        chatPopup.style.top = `${newTop}px`;
+    }
+
+    function onTouchEnd() {
+        isDragging = false;
+        document.removeEventListener("touchmove", onTouchMove);
+        document.removeEventListener("touchend", onTouchEnd);
+    }
+}
+
+// Jalankan fungsi setelah DOM dimuat
+document.addEventListener("DOMContentLoaded", () => {
+    makeAIChatDraggable();
 });
+});
+
+/* ============================================================
+   MAKE AI CHAT DRAGGABLE (ROBUST & TOUCH FRIENDLY)
+   ============================================================ */
+
+function initDraggableAIChat() {
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    // Helper untuk mengambil elemen popup
+    const getPopup = () => document.querySelector(".ai-popup-chat");
+
+    // ------------------------------------------------------------
+    // 1. MOUSE EVENTS (DESKTOP / LAPTOP)
+    // ------------------------------------------------------------
+    document.addEventListener("mousedown", (e) => {
+        const header = e.target.closest(".ai-chat-header");
+        const popup = getPopup();
+
+        if (!header || !popup) return;
+        if (e.target.closest(".ai-close-btn")) return; // Abaikan jika klik tombol close
+
+        isDragging = true;
+        popup.classList.add("is-dragged");
+
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const rect = popup.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        // Reset properti CSS posisi fixed kanan/bawah
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+        popup.style.left = `${initialLeft}px`;
+        popup.style.top = `${initialTop}px`;
+
+        const onMouseMove = (moveEvent) => {
+            if (!isDragging) return;
+
+            const dx = moveEvent.clientX - startX;
+            const dy = moveEvent.clientY - startY;
+
+            let newLeft = initialLeft + dx;
+            let newTop = initialTop + dy;
+
+            // Batasi agar tidak keluar layar
+            const maxLeft = window.innerWidth - popup.offsetWidth;
+            const maxTop = window.innerHeight - popup.offsetHeight;
+
+            newLeft = Math.max(5, Math.min(newLeft, maxLeft - 5));
+            newTop = Math.max(5, Math.min(newTop, maxTop - 5));
+
+            popup.style.left = `${newLeft}px`;
+            popup.style.top = `${newTop}px`;
+        };
+
+        const onMouseUp = () => {
+            isDragging = false;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        };
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+    });
+
+
+    // ------------------------------------------------------------
+    // 2. TOUCH EVENTS (MOBILE / TABLET)
+    // ------------------------------------------------------------
+    document.addEventListener("touchstart", (e) => {
+        const header = e.target.closest(".ai-chat-header");
+        const popup = getPopup();
+
+        if (!header || !popup) return;
+        if (e.target.closest(".ai-close-btn")) return;
+
+        isDragging = true;
+        popup.classList.add("is-dragged");
+
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+
+        const rect = popup.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+        popup.style.left = `${initialLeft}px`;
+        popup.style.top = `${initialTop}px`;
+
+        const onTouchMove = (moveEvent) => {
+            if (!isDragging) return;
+            moveEvent.preventDefault(); // Mencegah halaman ter-scroll saat geser popup
+
+            const moveTouch = moveEvent.touches[0];
+            const dx = moveTouch.clientX - startX;
+            const dy = moveTouch.clientY - startY;
+
+            let newLeft = initialLeft + dx;
+            let newTop = initialTop + dy;
+
+            const maxLeft = window.innerWidth - popup.offsetWidth;
+            const maxTop = window.innerHeight - popup.offsetHeight;
+
+            newLeft = Math.max(5, Math.min(newLeft, maxLeft - 5));
+            newTop = Math.max(5, Math.min(newTop, maxTop - 5));
+
+            popup.style.left = `${newLeft}px`;
+            popup.style.top = `${newTop}px`;
+        };
+
+        const onTouchEnd = () => {
+            isDragging = false;
+            document.removeEventListener("touchmove", onTouchMove);
+            document.removeEventListener("touchend", onTouchEnd);
+        };
+
+        document.addEventListener("touchmove", onTouchMove, { passive: false });
+        document.addEventListener("touchend", onTouchEnd);
+    });
+}
+
+// Inisialisasi setelah seluruh dokumen siap
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDraggableAIChat);
+} else {
+    initDraggableAIChat();
+}

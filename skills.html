@@ -8,6 +8,14 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
+    <!-- ANTI-FLASH SCRIPT (Taruh sebelum CSS) -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('theme');
+            const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', saved || system);
+        })();
+    </script>
 </head>
 <body>
     <nav class="navbar">

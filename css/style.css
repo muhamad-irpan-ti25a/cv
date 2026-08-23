@@ -2903,3 +2903,29 @@ body, .glass-card, .navbar, .holo-card, .btn-glass, .spatial-window {
         opacity: 0;
     }
 }
+
+/* ============================================================
+   DRAGGABLE AI CHAT FIX
+   ============================================================ */
+
+.ai-popup-chat {
+    touch-action: none;          /* Wajib untuk HP agar layar tidak ter-scroll saat geser */
+    user-select: none;           /* Mencegah teks terblok saat ditarik */
+    will-change: left, top;      /* Mengoptimalkan gerakan drag */
+}
+
+/* Matikan animasi CSS bawaan jika posisi sudah diubah secara manual */
+.ai-popup-chat.is-dragged {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Header sebagai penarik (Drag Handle) */
+.ai-chat-header {
+    cursor: move !important;
+    cursor: grab !important;
+}
+
+.ai-chat-header:active {
+    cursor: grabbing !important;
+}
