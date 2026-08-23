@@ -2668,3 +2668,238 @@ body {
         transition-duration: 0.01ms !important;
     }
 }
+
+
+/* ============================================================
+   LIGHT THEME VARIABLES & OVERHAUL - HIGH CONTRAST & PARTICLES
+   ============================================================ */
+
+:root[data-theme="light"] {
+    --bg-color: #e2e8f0;
+    --card-bg: rgba(255, 255, 255, 0.88);
+
+    --primary-color: #0284c7;
+    --secondary-color: #2563eb;
+
+    --text-color: #0f172a;
+    --text-dim: #334155;
+
+    --border-color: rgba(15, 23, 42, 0.18);
+    --success-color: #059669;
+    --danger-color: #dc2626;
+}
+
+/* Background Canvas Gradient untuk Mode Terang */
+:root[data-theme="light"] body {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(226, 232, 240, 0.9) 100%);
+}
+
+/* Smooth Theme Transition for Background and Cards */
+body, .glass-card, .navbar, .holo-card, .btn-glass, .spatial-window {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Penyesuaian Elemen Khusus Mode Terang */
+:root[data-theme="light"] .terminal-prompt {
+    color: #1e293b !important;
+    font-weight: 600;
+}
+
+:root[data-theme="light"] .hero-content p,
+:root[data-theme="light"] .about-card p,
+:root[data-theme="light"] .section-description,
+:root[data-theme="light"] .stat-card p,
+:root[data-theme="light"] .holo-main p {
+    color: var(--text-dim) !important;
+}
+
+:root[data-theme="light"] .hero-code-card {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(2, 132, 199, 0.3);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="light"] .code-title {
+    color: #475569;
+}
+
+:root[data-theme="light"] .code-body {
+    color: #0f172a;
+}
+
+:root[data-theme="light"] .btn-glass {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.2);
+    color: #0f172a;
+}
+
+:root[data-theme="light"] .btn-glass:hover {
+    background: rgba(15, 23, 42, 0.12);
+    border-color: rgba(15, 23, 42, 0.4);
+}
+
+:root[data-theme="light"] .vision-pill-bar {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(2, 132, 199, 0.4);
+}
+
+:root[data-theme="light"] .status-badge {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: rgba(2, 132, 199, 0.3);
+    color: #0369a1;
+}
+
+:root[data-theme="light"] .project-tech span {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.15);
+    color: #1e293b;
+    font-weight: 600;
+}
+
+:root[data-theme="light"] .ai-popup-chat {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+}
+
+:root[data-theme="light"] .ai-brand h4,
+:root[data-theme="light"] .ai-welcome-card p {
+    color: #0f172a !important;
+}
+
+:root[data-theme="light"] .ai-msg.bot {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.12);
+    color: #0f172a;
+}
+
+:root[data-theme="light"] .ai-chip {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(2, 132, 199, 0.4);
+    color: #0284c7;
+}
+
+:root[data-theme="light"] .ai-chip:hover {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+:root[data-theme="light"] .ai-chat-footer input {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.2);
+    color: #0f172a;
+}
+
+
+/* ============================================================
+   ANIMATED THEME TOGGLE BUTTON
+   ============================================================ */
+
+.theme-toggle-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.08) rotate(8deg);
+}
+
+.theme-icon-wrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+}
+
+/* Mode Dark (Default): Tampilkan Sun, Sembunyikan Moon */
+:root[data-theme="dark"] .sun-icon,
+:root:not([data-theme]) .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    color: #f59e0b;
+}
+
+:root[data-theme="dark"] .moon-icon,
+:root:not([data-theme]) .moon-icon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.3);
+}
+
+/* Mode Light: Tampilkan Moon, Sembunyikan Sun */
+:root[data-theme="light"] .sun-icon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.3);
+}
+
+:root[data-theme="light"] .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    color: #3b82f6;
+}
+
+
+/* ============================================================
+   THEME RIPPLE ANIMATION
+   ============================================================ */
+
+.theme-ripple-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99999;
+    overflow: hidden;
+}
+
+.theme-ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: rippleExpand 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: transform, opacity;
+}
+
+.theme-ripple.to-light {
+    background: radial-gradient(circle, rgba(248, 250, 252, 0.95) 0%, rgba(248, 250, 252, 0.8) 70%);
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+}
+
+.theme-ripple.to-dark {
+    background: radial-gradient(circle, rgba(13, 17, 23, 0.95) 0%, rgba(13, 17, 23, 0.8) 70%);
+    box-shadow: 0 0 50px rgba(13, 17, 23, 0.8);
+}
+
+@keyframes rippleExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    70% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}

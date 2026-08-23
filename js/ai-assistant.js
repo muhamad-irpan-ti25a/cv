@@ -2,10 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("aiWidgetContainer");
     if (!container) return;
 
-    // Cache untuk menyimpan data sertifikat setelah di-fetch
+    // Cache Data & Speech State
     let certificatesData = [];
+    let isSpeechEnabled = false;
+    const synth = window.speechSynthesis;
 
-    // 1. Inject HTML UI Assistant & CSS Style
+    // 1. Inject UI CSS & Structure
     container.innerHTML = `
         <style>
             /* Typing Indicator */
@@ -29,6 +31,58 @@ document.addEventListener("DOMContentLoaded", () => {
             @keyframes aiTypingBounce {
                 0%, 100% { transform: translateY(0); opacity: 0.4; }
                 50% { transform: translateY(-4px); opacity: 1; }
+            }
+
+            /* Header Controls */
+            .ai-header-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .ai-icon-btn {
+                background: transparent;
+                border: none;
+                color: var(--text-dim, #94a3b8);
+                cursor: pointer;
+                padding: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+                transition: color 0.2s, background 0.2s;
+            }
+            .ai-icon-btn:hover {
+                color: #00f2fe;
+                background: rgba(255, 255, 255, 0.1);
+            }
+            .ai-icon-btn.active {
+                color: #00e676;
+            }
+
+            /* Quick Suggestion Chips */
+            .ai-suggestions {
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+                padding: 6px 0;
+                margin-top: 6px;
+                scroll-snap-type: x mandatory;
+            }
+            .ai-chip {
+                background: rgba(0, 242, 254, 0.1);
+                border: 1px solid rgba(0, 242, 254, 0.25);
+                color: var(--primary-color, #00f2fe);
+                border-radius: 20px;
+                padding: 4px 10px;
+                font-size: 11px;
+                white-space: nowrap;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                scroll-snap-align: start;
+            }
+            .ai-chip:hover {
+                background: rgba(0, 242, 254, 0.25);
+                transform: translateY(-1px);
             }
 
             /* Certificate Slider & Cards */
@@ -55,9 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 color: inherit;
             }
             .cert-filter-btn.active {
-                background: #3b82f6;
-                color: #fff;
-                border-color: #3b82f6;
+                background: #00f2fe;
+                color: #020617;
+                font-weight: bold;
+                border-color: #00f2fe;
             }
             .cert-cards-scroll {
                 display: flex;
@@ -69,8 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .cert-card-item {
                 flex: 0 0 140px;
                 scroll-snap-align: start;
-                background: rgba(0, 0, 0, 0.2);
-                border: 1px solid rgba(255, 255, 255, 0.15);
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(0, 242, 254, 0.2);
                 border-radius: 8px;
                 overflow: hidden;
                 cursor: pointer;
@@ -78,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             .cert-card-item:hover {
                 transform: translateY(-2px);
-                border-color: #3b82f6;
+                border-color: #00f2fe;
             }
             .cert-card-item img {
                 width: 100%;
@@ -98,31 +153,162 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             .cert-card-info span {
                 font-size: 10px;
-                opacity: 0.7;
+                color: #00f2fe;
             }
 
             /* Certificate Detail View */
             .cert-detail-card {
-                background: rgba(0, 0, 0, 0.25);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 8px;
-                padding: 8px;
-                margin-top: 6px;
+                background: rgba(0, 0, 0, 0.35);
+                border: 1px solid rgba(0, 242, 254, 0.3);
+                border-radius: 10px;
+                padding: 10px;
+                margin-top: 8px;
             }
             .cert-detail-card img {
                 width: 100%;
                 border-radius: 6px;
-                margin-bottom: 6px;
+                margin-bottom: 8px;
             }
             .cert-detail-card h4 {
                 margin: 0 0 4px 0;
                 font-size: 13px;
+                color: #00f2fe;
             }
             .cert-detail-card p {
                 margin: 0 0 6px 0;
                 font-size: 11px;
                 line-height: 1.4;
+                color: #cbd5e1;
             }
+                /* ============================================================
+   MODERN WELCOME CARD & QUICK CHIPS (Vision OS Style)
+   ============================================================ */
+
+.ai-welcome-card {
+    background: rgba(0, 242, 254, 0.04);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    backdrop-filter: blur(8px);
+}
+
+.ai-welcome-card p {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #e2e8f0;
+}
+
+.ai-welcome-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: var(--primary-color, #00f2fe);
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+.ai-welcome-header i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Quick Suggestion Chips Container */
+.ai-suggestions {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+    margin-top: 4px;
+    scroll-snap-type: x mandatory;
+}
+
+/* Quick Chips Style */
+.ai-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    color: #f0f6fc;
+    border-radius: 30px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ai-chip:hover {
+    background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.25));
+    border-color: #00f2fe;
+    color: #00f2fe;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);
+}
+
+.ai-chip i {
+    width: 14px;
+    height: 14px;
+    color: #00f2fe;
+}
+    /* ============================================================
+   HIDE SCROLLBAR BUTTONS / ARROWS (<----->)
+   ============================================================ */
+
+/* Sembunyikan tombol panah/segitiga scroll di semua elemen AI Chat */
+.ai-chat-body::-webkit-scrollbar-button,
+.cert-cards-scroll::-webkit-scrollbar-button,
+.cert-filter-pills::-webkit-scrollbar-button,
+.ai-suggestions::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Penyesuaian Scrollbar Ultra Clean */
+.cert-cards-scroll,
+.cert-filter-pills,
+.ai-suggestions {
+    /* Menghilangkan panah bawaan di Edge/IE */
+    -ms-overflow-style: -ms-autohide-scrollbar;
+}
+
+.ai-chat-body::-webkit-scrollbar,
+.cert-cards-scroll::-webkit-scrollbar,
+.cert-filter-pills::-webkit-scrollbar,
+.ai-suggestions::-webkit-scrollbar {
+    height: 4px; /* Sangat tipis & elegan */
+    width: 4px;
+}
+
+.ai-chat-body::-webkit-scrollbar-track,
+.cert-cards-scroll::-webkit-scrollbar-track,
+.cert-filter-pills::-webkit-scrollbar-track,
+.ai-suggestions::-webkit-scrollbar-track {
+    background: transparent; /* Latar belakang track transparan */
+}
+
+.ai-chat-body::-webkit-scrollbar-thumb,
+.cert-cards-scroll::-webkit-scrollbar-thumb,
+.cert-filter-pills::-webkit-scrollbar-thumb,
+.ai-suggestions::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 254, 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.ai-chat-body::-webkit-scrollbar-thumb:hover,
+.cert-cards-scroll::-webkit-scrollbar-thumb:hover,
+.cert-filter-pills::-webkit-scrollbar-thumb:hover,
+.ai-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #00f2fe;
+}
         </style>
 
         <button class="ai-fab-button" id="aiBtn" aria-label="Buka AI Chat">
@@ -135,21 +321,49 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="ai-brand">
                     <div class="ai-avatar"><i data-lucide="sparkles"></i></div>
                     <div>
-                        <h4>Smart AI Agent</h4>
+                        <h4>Smart AI Agent v2</h4>
                         <span class="status-online">Full Control Mode</span>
                     </div>
                 </div>
-                <button class="ai-close-btn" id="aiClose"><i data-lucide="x"></i></button>
-            </div>
-
-            <div class="ai-chat-body" id="aiBody">
-                <div class="ai-msg bot">
-                    Halo! Saya AI Agent web ini. Anda bisa meminta saya menampilkan sertifikat dari halaman certificates.html, berpindah halaman, hingga membuka form kontak!
+                <div class="ai-header-actions">
+                    <button class="ai-icon-btn" id="aiVoiceToggle" title="Aktifkan Suara Voice">
+                        <i data-lucide="volume-x"></i>
+                    </button>
+                    <button class="ai-icon-btn" id="aiClearChat" title="Hapus Obrolan">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                    <button class="ai-close-btn" id="aiClose"><i data-lucide="x"></i></button>
                 </div>
             </div>
 
+            <div class="ai-chat-body" id="aiBody">
+    <div class="ai-msg bot">
+        <div class="ai-welcome-card">
+            <div class="ai-welcome-header">
+                <i data-lucide="sparkles"></i>
+                <span>Spatial Assistant Ready</span>
+            </div>
+            <p>Halo! Saya AI Agent web ini. Ada yang bisa saya bantu hari ini? Silakan pilih opsi cepat di bawah atau ketikkan pertanyaan Anda:</p>
+            <div class="ai-suggestions">
+                <button class="ai-chip" data-prompt="Tampilkan sertifikat">
+                    <i data-lucide="award"></i> Semua Sertifikat
+                </button>
+                <button class="ai-chip" data-prompt="Cari sertifikat linux">
+                    <i data-lucide="terminal"></i> Sertifikat Linux
+                </button>
+                <button class="ai-chip" data-prompt="Hubungi">
+                    <i data-lucide="mail"></i> Form Kontak
+                </button>
+                <button class="ai-chip" data-prompt="Ganti tema">
+                    <i data-lucide="moon"></i> Ubah Tampilan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
             <div class="ai-chat-footer">
-                <input type="text" id="aiInput" placeholder="Tanyakan sesuatu atau beri perintah..." autocomplete="off">
+                <input type="text" id="aiInput" placeholder="Ketik perintah atau 'Cari sertifikat [topik]'..." autocomplete="off">
                 <button id="aiSend" class="btn-send"><i data-lucide="send"></i></button>
             </div>
         </div>
@@ -164,6 +378,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const aiSend = document.getElementById("aiSend");
     const aiInput = document.getElementById("aiInput");
     const aiBody = document.getElementById("aiBody");
+    const aiVoiceToggle = document.getElementById("aiVoiceToggle");
+    const aiClearChat = document.getElementById("aiClearChat");
 
     // Toggle Chatbox
     aiBtn.addEventListener("click", () => {
@@ -173,11 +389,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
     aiClose.addEventListener("click", () => aiWindow.classList.remove("active"));
 
-    // 2. Dynamic Fetcher untuk Membaca `certificates.html` Secara Presisi
-    async function fetchCertificatesFromPage() {
-        if (certificatesData.length > 0) return certificatesData; // Gunakan cache jika ada
+    // Toggle Voice Mode
+    aiVoiceToggle.addEventListener("click", () => {
+        isSpeechEnabled = !isSpeechEnabled;
+        aiVoiceToggle.classList.toggle("active", isSpeechEnabled);
+        aiVoiceToggle.innerHTML = `<i data-lucide="${isSpeechEnabled ? "volume-2" : "volume-x"}"></i>`;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        if (!isSpeechEnabled && synth) synth.cancel();
+    });
 
-        // Jika user sedang berada di halaman certificates.html, ambil langsung dari DOM aktif
+    // Clear Chat
+    aiClearChat.addEventListener("click", () => {
+        aiBody.innerHTML = `
+            <div class="ai-msg bot">
+                Obrolan telah dibersihkan! Ada yang ingin Anda tanyakan lagi?
+                <div class="ai-suggestions">
+                    <button class="ai-chip" data-prompt="Tampilkan sertifikat">🏆 Semua Sertifikat</button>
+                    <button class="ai-chip" data-prompt="Ke proyek">🚀 Lihat Proyek</button>
+                    <button class="ai-chip" data-prompt="Hubungi">✉️ Form Kontak</button>
+                </div>
+            </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+
+    // Voice Synthesis Reader
+    function speakText(text) {
+        if (!isSpeechEnabled || !synth) return;
+        synth.cancel();
+
+        // Bersihkan teks dari format HTML sebelum dibaca
+        const cleanText = text.replace(/<[^>]*>?/gm, '');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = "id-ID";
+        utterance.rate = 1.0;
+        synth.speak(utterance);
+    }
+
+    // Dynamic Fetcher untuk Membaca `certificates.html`
+    async function fetchCertificatesFromPage() {
+        if (certificatesData.length > 0) return certificatesData;
+
         const localCertCards = document.querySelectorAll(".cert-card");
         if (localCertCards.length > 0) {
             const parsedData = [];
@@ -185,12 +438,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const img = el.querySelector("img.cert-img")?.getAttribute("src") || "";
                 const title = (el.querySelector(".cert-details h3")?.textContent || `Sertifikat ${index + 1}`).trim();
                 const description = (el.querySelector(".cert-details p")?.textContent || "Sertifikat resmi portofolio.").trim();
-                
+                const category = el.getAttribute("data-cat") || "School";
+                const subCategory = el.getAttribute("data-sub") || "";
+
                 if (img || title) {
                     parsedData.push({
                         id: `cert-${index + 1}`,
                         title: title,
-                        category: "Sertifikat",
+                        category: category,
+                        subCategory: subCategory,
                         image: img,
                         description: description
                     });
@@ -200,7 +456,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return certificatesData;
         }
 
-        // Jika dipanggil dari halaman lain, lakukan fetch HTTP
         const possiblePaths = ["certificates.html", "/certificates.html", "./certificates.html"];
         let htmlText = "";
 
@@ -211,35 +466,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     htmlText = await response.text();
                     break;
                 }
-            } catch (e) {
-                // Lanjut ke path berikutnya
-            }
+            } catch (e) {}
         }
 
-        if (!htmlText) {
-            console.error("Gagal memuat certificates.html dari semua path.");
-            return [];
-        }
+        if (!htmlText) return [];
 
         try {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, "text/html");
-
             const certElements = doc.querySelectorAll(".cert-card");
             const parsedData = [];
 
             certElements.forEach((el, index) => {
                 const img = el.querySelector("img.cert-img")?.getAttribute("src") || "";
-                // Menggunakan textContent agar pembacaan string dari DOMParser stabil
                 const title = (el.querySelector(".cert-details h3")?.textContent || `Sertifikat ${index + 1}`).trim();
                 const description = (el.querySelector(".cert-details p")?.textContent || "Sertifikat resmi portofolio.").trim();
-                const category = "Sertifikat";
+                const category = el.getAttribute("data-cat") || "School";
+                const subCategory = el.getAttribute("data-sub") || "";
 
                 if (img || title) {
                     parsedData.push({
                         id: `cert-${index + 1}`,
                         title: title,
                         category: category,
+                        subCategory: subCategory,
                         image: img,
                         description: description
                     });
@@ -249,16 +499,15 @@ document.addEventListener("DOMContentLoaded", () => {
             certificatesData = parsedData;
             return certificatesData;
         } catch (error) {
-            console.error("Error parsing certificates.html:", error);
             return [];
         }
     }
 
-    // 3. Kumpulan Navigasi & Aksi Web
+    // Site Actions Mapping
     const siteActions = [
         {
             keywords: ["tampilkan sertifikat", "tunjukkan sertifikat", "lihat sertifikat", "daftar sertifikat", "sertifikat"],
-            reply: "Berikut daftar sertifikat yang berhasil diambil langsung dari halaman `certificates.html`. Klik pada salah satu sertifikat untuk melihat penjelasannya:",
+            reply: "Berikut daftar sertifikat yang berhasil diambil langsung dari halaman `certificates.html`. Klik salah satu untuk info detail:",
             type: "SHOW_CERTIFICATES"
         },
         {
@@ -293,47 +542,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (target) target.scrollIntoView({ behavior: 'smooth' });
             }
         },
-        {
-            keywords: ["halaman skill", "buka skill", "ke skill"],
-            reply: "Siap! Membuka halaman Skills...",
-            action: () => { window.location.href = "skills.html"; }
-        },
-        {
-            keywords: ["halaman project", "buka project", "semua project"],
-            reply: "Siap! Membuka halaman Projects...",
-            action: () => { window.location.href = "projects.html"; }
-        },
-        {
-            keywords: ["halaman sertifikat", "buka sertifikat", "ke sertifikat"],
-            reply: "Siap! Membuka halaman Certificates...",
-            action: () => { window.location.href = "certificates.html"; }
-        },
-        {
-            keywords: ["halaman video", "buka video", "ke video"],
-            reply: "Siap! Membuka halaman Videos...",
-            action: () => { window.location.href = "videos.html"; }
-        },
-        {
-            keywords: ["halaman blog", "buka blog", "ke blog"],
-            reply: "Siap! Membuka halaman Blog...",
-            action: () => { window.location.href = "blog.html"; }
-        }
+        { keywords: ["halaman skill", "buka skill", "ke skill"], reply: "Siap! Membuka halaman Skills...", action: () => { window.location.href = "skills.html"; } },
+        { keywords: ["halaman project", "buka project", "semua project"], reply: "Siap! Membuka halaman Projects...", action: () => { window.location.href = "projects.html"; } },
+        { keywords: ["halaman sertifikat", "buka sertifikat", "ke sertifikat"], reply: "Siap! Membuka halaman Certificates...", action: () => { window.location.href = "certificates.html"; } },
+        { keywords: ["halaman video", "buka video", "ke video"], reply: "Siap! Membuka halaman Videos...", action: () => { window.location.href = "videos.html"; } },
+        { keywords: ["halaman blog", "buka blog", "ke blog"], reply: "Siap! Membuka halaman Blog...", action: () => { window.location.href = "blog.html"; } }
     ];
 
-    // 4. Render Komponen Gallery Sertifikat (Dengan Filter Kategori)
+    // Render Component Gallery Sertifikat
     function createCertificateGalleryHTML(data, filterCategory = "All") {
         if (!data || data.length === 0) {
-            return `<div style="margin-top:6px; font-size:12px; color:#ef4444;">Tidak dapat menemukan data sertifikat di halaman certificates.html. Pastikan website dibuka menggunakan Live Server/Local Host.</div>`;
+            return `<div style="margin-top:6px; font-size:12px; color:#ef4444;">Tidak dapat menemukan data sertifikat di halaman certificates.html. Pastikan website dibuka via Live Server.</div>`;
         }
 
         const categories = ["All", ...new Set(data.map(c => c.category))];
-        
         const filteredData = filterCategory === "All" 
             ? data 
-            : data.filter(c => c.category === filterCategory);
+            : data.filter(c => c.category.toLowerCase() === filterCategory.toLowerCase());
 
         const filterPillsHTML = categories.map(cat => 
-            `<button class="cert-filter-btn ${cat === filterCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>`
+            `<button class="cert-filter-btn ${cat.toLowerCase() === filterCategory.toLowerCase() ? 'active' : ''}" data-category="${cat}">${cat.toUpperCase()}</button>`
         ).join("");
 
         const cardsHTML = filteredData.map(cert => `
@@ -354,7 +582,18 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // 5. Scraper DOM untuk Teks Halaman Saat Ini
+    // Search Sertifikat berdasarkan Query
+    async function searchCertificatesByQuery(query) {
+        const certs = await fetchCertificatesFromPage();
+        const keywords = query.toLowerCase().replace("cari sertifikat", "").replace("sertifikat", "").trim().split(" ");
+        
+        return certs.filter(cert => {
+            const targetStr = (cert.title + " " + cert.category + " " + cert.subCategory + " " + cert.description).toLowerCase();
+            return keywords.some(k => k.length > 1 && targetStr.includes(k));
+        });
+    }
+
+    // DOM Scraper
     function scrapePageContent() {
         const sections = document.querySelectorAll("section, .about-card, .project-card");
         const knowledge = [];
@@ -362,18 +601,28 @@ document.addEventListener("DOMContentLoaded", () => {
         sections.forEach(sec => {
             const title = sec.querySelector("h1, h2, h3, .section-title")?.textContent || "";
             const text = sec.textContent.replace(/\s+/g, ' ').trim();
-            if (title || text) {
-                knowledge.push({ title: title.toLowerCase(), text: text });
-            }
+            if (title || text) knowledge.push({ title: title.toLowerCase(), text: text });
         });
 
         return knowledge;
     }
 
-    // 6. Processing Brain
-    function processQuery(query) {
+    // AI Query Brain
+    async function processQuery(query) {
         const input = query.toLowerCase().trim();
 
+        // Check 1: Pencarian Spesifik Sertifikat (e.g. "cari sertifikat linux")
+        if (input.includes("cari sertifikat") || (input.includes("sertifikat") && input.split(" ").length > 1)) {
+            const searchResults = await searchCertificatesByQuery(input);
+            if (searchResults.length > 0) {
+                return {
+                    text: `Ditemukan **${searchResults.length} sertifikat** yang cocok dengan pencarian Anda:`,
+                    customHTML: createCertificateGalleryHTML(searchResults, "All")
+                };
+            }
+        }
+
+        // Check 2: Action Commands
         for (let item of siteActions) {
             if (item.keywords.some(k => input.includes(k))) {
                 return {
@@ -384,6 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // Check 3: Scraped Page Content
         const scrapedData = scrapePageContent();
         for (let data of scrapedData) {
             const words = input.split(" ").filter(w => w.length > 2);
@@ -394,18 +644,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 const matchedSentence = sentences.find(s => words.some(w => s.toLowerCase().includes(w)));
                 if (matchedSentence) {
                     return {
-                        text: `Berdasarkan informasi di halaman ini: "${matchedSentence.trim()}."`
+                        text: `Berdasarkan informasi halaman ini: "${matchedSentence.trim()}."`
                     };
                 }
             }
         }
 
         return {
-            text: "Maaf, saya belum memahami perintah tersebut. Coba ketik seperti: 'tampilkan sertifikat', 'buka kontak', 'ganti tema', atau 'ke proyek'."
+            text: "Maaf, saya belum memahami perintah tersebut. Coba klik opsi di bawah atau ketikkan kata kunci seperti: 'cari sertifikat linux', 'buka kontak', atau 'ganti tema'."
         };
     }
 
-    // 7. Handling Typing & Messaging UI
+    // UI Helpers
     function showTypingIndicator() {
         const div = document.createElement("div");
         div.className = "ai-msg bot typing-msg";
@@ -424,36 +674,36 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typingElem) typingElem.remove();
     }
 
-    async function handleSend() {
-        const text = aiInput.value.trim();
+    async function handleSend(customText = null) {
+        const text = customText || aiInput.value.trim();
         if (!text) return;
 
         appendMsg(text, "user");
-        aiInput.value = "";
+        if (!customText) aiInput.value = "";
 
         showTypingIndicator();
 
-        const result = processQuery(text);
+        const result = await processQuery(text);
+        removeTypingIndicator();
 
-        // Jika user meminta sertifikat, fetch data dari certificates.html terlebih dahulu
         if (result.type === "SHOW_CERTIFICATES") {
             const certs = await fetchCertificatesFromPage();
-            removeTypingIndicator();
             const fullReply = result.text + createCertificateGalleryHTML(certs, "All");
             appendMsg(fullReply, "bot");
+            speakText(result.text);
             return;
         }
 
-        setTimeout(() => {
-            removeTypingIndicator();
-            appendMsg(result.text, "bot");
-            if (result.action) {
-                setTimeout(() => result.action(), 1000);
-            }
-        }, 800);
+        const replyHTML = result.text + (result.customHTML || "");
+        appendMsg(replyHTML, "bot");
+        speakText(result.text);
+
+        if (result.action) {
+            setTimeout(() => result.action(), 800);
+        }
     }
 
-    aiSend.addEventListener("click", handleSend);
+    aiSend.addEventListener("click", () => handleSend());
     aiInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") handleSend();
     });
@@ -472,8 +722,15 @@ document.addEventListener("DOMContentLoaded", () => {
         aiBody.scrollTop = aiBody.scrollHeight;
     }
 
-    // 8. Event Delegation untuk Interaksi Galeri Sertifikat (Filter & Klik Detail)
+    // Event Delegation (Chips, Filter, & Certificate Detail)
     aiBody.addEventListener("click", (e) => {
+        // Quick Suggestion Chips
+        if (e.target.classList.contains("ai-chip")) {
+            const prompt = e.target.getAttribute("data-prompt");
+            if (prompt) handleSend(prompt);
+            return;
+        }
+
         // Filter Kategori
         if (e.target.classList.contains("cert-filter-btn")) {
             const category = e.target.getAttribute("data-category");
@@ -481,6 +738,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (galleryContainer) {
                 galleryContainer.outerHTML = createCertificateGalleryHTML(certificatesData, category);
             }
+            return;
         }
 
         // Klik Kartu untuk Detail Sertifikat
@@ -494,15 +752,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     removeTypingIndicator();
                     const detailHTML = `
-                        Berikut detail mengenai sertifikat **${cert.title}**:
+                        Detail sertifikat **${cert.title}**:
                         <div class="cert-detail-card">
                             <img src="${cert.image}" alt="${cert.title}" onerror="this.src='https://via.placeholder.com/300x160?text=Sertifikat'">
                             <h4>${cert.title}</h4>
+                            <p><strong>Kategori:</strong> ${cert.category} ${cert.subCategory ? `(${cert.subCategory})` : ''}</p>
                             <p>${cert.description}</p>
                         </div>
                     `;
                     appendMsg(detailHTML, "bot");
-                }, 500);
+                    speakText(`Berikut detail untuk sertifikat ${cert.title}`);
+                }, 400);
             }
         }
     });
