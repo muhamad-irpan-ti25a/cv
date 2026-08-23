@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!container) return;
 
     let certificatesData = [];
+    let videosData = [];
+    let blogsData = [];
     let isSpeechEnabled = false;
     const synth = window.speechSynthesis;
     let selectedVoice = null;
@@ -14,8 +16,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (synth) {
         initVoices();
-        if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = initVoices;
+        if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = initVoices;
+    }
+
+    async function ensureGlobalDataLoaded() {
+        if (typeof videos !== "undefined" && videos.length > 0) {
+            videosData = videos;
+        } else if (videosData.length === 0) {
+            try {
+                const res = await fetch("videos.html");
+                if (res.ok) {
+                    const html = await res.text();
+                    const match = html.match(/const\s+videos\s*=\s*(\[[\s\S]*?\]);/);
+                    if (match && match[1]) videosData = eval(match[1]);
+                }
+            } catch (e) {}
+        }
+
+        if (typeof POSTS !== "undefined" && POSTS.length > 0) {
+            blogsData = POSTS;
+        } else if (blogsData.length === 0) {
+            try {
+                const res = await fetch("blog.html");
+                if (res.ok) {
+                    const html = await res.text();
+                    const match = html.match(/const\s+POSTS\s*=\s*(\[[\s\S]*?\]);/);
+                    if (match && match[1]) blogsData = eval(match[1]);
+                }
+            } catch (e) {}
         }
     }
 
@@ -49,10 +77,28 @@ document.addEventListener("DOMContentLoaded", () => {
             .cert-card-info h5 { margin: 0; font-size: 11px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .cert-card-info span { font-size: 10px; color: #00f2fe; }
 
-            .cert-detail-card { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; padding: 10px; margin-top: 8px; }
+            .cert-detail-card { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; padding: 10px; margin-top: 8px; transition: border-color 0.2s; }
+            .cert-detail-card:hover { border-color: #00f2fe; }
             .cert-detail-card img { width: 100%; border-radius: 6px; margin-bottom: 8px; }
             .cert-detail-card h4 { margin: 0 0 4px 0; font-size: 13px; color: #00f2fe; }
             .cert-detail-card p { margin: 0 0 6px 0; font-size: 11px; line-height: 1.4; color: #cbd5e1; }
+
+            .ai-link-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #00f2fe;
+                color: #020617 !important;
+                font-weight: 600;
+                font-size: 11px;
+                padding: 6px 12px;
+                border-radius: 6px;
+                text-decoration: none !important;
+                margin-top: 6px;
+                cursor: pointer;
+                transition: transform 0.2s, background-color 0.2s;
+            }
+            .ai-link-btn:hover { background: #38ef7d; transform: translateY(-1px); }
 
             .ai-welcome-card { background: rgba(0, 242, 254, 0.04); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 14px; padding: 12px 14px; margin-bottom: 6px; backdrop-filter: blur(8px); }
             .ai-welcome-card p { margin: 0 0 10px 0; font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; }
@@ -85,8 +131,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="ai-brand">
                     <div class="ai-avatar"><i data-lucide="sparkles"></i></div>
                     <div>
-                        <h4>Smart AI Agent v4</h4>
-                        <span class="status-online">Full Intelligent Search Active</span>
+                        <h4>Smart AI Agent v5.2</h4>
+                        <span class="status-online">Global Universal Search</span>
                     </div>
                 </div>
                 <div class="ai-header-actions">
@@ -108,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <i data-lucide="sparkles"></i>
                             <span>Spatial AI Assistant Ready</span>
                         </div>
-                        <p>Halo! Saya AI Agent serbaguna. Silakan tanya video, artikel, latar belakang kuliah, sertifikat, atau berpindah menu:</p>
+                        <p>Halo! Saya AI Agent serbaguna. Tanya video, blog, sertifikat, atau informasi apapun dari halaman manapun:</p>
                         <div class="ai-suggestions">
                             <button class="ai-chip" data-prompt="Kuliah di mana?">
                                 <i data-lucide="graduation-cap"></i> Info Kuliah
@@ -128,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="ai-chat-footer">
-                <input type="text" id="aiInput" placeholder="Tanya sesuatu atau beri perintah..." autocomplete="off">
+                <input type="text" id="aiInput" placeholder="Tanya video, blog, sertifikat, atau menu..." autocomplete="off">
                 <button id="aiSend" class="btn-send"><i data-lucide="send"></i></button>
             </div>
         </div>
@@ -158,12 +204,8 @@ document.addEventListener("DOMContentLoaded", () => {
     aiVoiceToggle.addEventListener("click", () => {
         isSpeechEnabled = !isSpeechEnabled;
         aiVoiceToggle.classList.toggle("active", isSpeechEnabled);
-
-        if (!isSpeechEnabled) {
-            stopSpeech();
-        } else {
-            speakText("Suara dikondisikan aktif.");
-        }
+        if (!isSpeechEnabled) stopSpeech();
+        else speakText("Suara dikondisikan aktif.");
     });
 
     aiClearChat.addEventListener("click", () => {
@@ -188,54 +230,16 @@ document.addEventListener("DOMContentLoaded", () => {
     function speakText(text) {
         if (!isSpeechEnabled || !synth) return;
         stopSpeech();
-
         const cleanText = text.replace(/<[^>]*>?/gm, '');
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = "id-ID";
         utterance.rate = 1.0;
-        
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
-        }
-
-        setTimeout(() => {
-            if (isSpeechEnabled) synth.speak(utterance);
-        }, 50);
+        if (selectedVoice) utterance.voice = selectedVoice;
+        setTimeout(() => { if (isSpeechEnabled) synth.speak(utterance); }, 50);
     }
-
-    window.addEventListener("beforeunload", () => stopSpeech());
-    window.addEventListener("pagehide", () => stopSpeech());
-    document.addEventListener("visibilitychange", () => {
-        if (document.hidden) stopSpeech();
-    });
 
     async function fetchCertificatesFromPage() {
         if (certificatesData.length > 0) return certificatesData;
-
-        const localCertCards = document.querySelectorAll(".cert-card");
-        if (localCertCards.length > 0) {
-            const parsedData = [];
-            localCertCards.forEach((el, index) => {
-                const img = el.querySelector("img.cert-img")?.getAttribute("src") || "";
-                const title = (el.querySelector(".cert-details h3")?.textContent || `Sertifikat ${index + 1}`).trim();
-                const description = (el.querySelector(".cert-details p")?.textContent || "Sertifikat resmi portofolio.").trim();
-                const category = el.getAttribute("data-cat") || "School";
-                const subCategory = el.getAttribute("data-sub") || "";
-
-                if (img || title) {
-                    parsedData.push({
-                        id: `cert-${index + 1}`,
-                        title: title,
-                        category: category,
-                        subCategory: subCategory,
-                        image: img,
-                        description: description
-                    });
-                }
-            });
-            certificatesData = parsedData;
-            return certificatesData;
-        }
 
         const possiblePaths = ["certificates.html", "/certificates.html", "./certificates.html"];
         let htmlText = "";
@@ -284,7 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // CLEAN FILTER KEYWORDS LOGIC
     function cleanQuery(query, stopWords) {
         let cleaned = query.toLowerCase();
         stopWords.forEach(word => {
@@ -294,28 +297,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function searchVideos(query) {
-        if (typeof videos === "undefined") return [];
+        const vList = (typeof videos !== "undefined" && videos.length > 0) ? videos : videosData;
+        if (!vList || vList.length === 0) return [];
+
         const stopWords = ["cari", "video", "tentang", "ada", "tampilkan", "apa", "apakah", "dikit", "di"];
         const keywords = cleanQuery(query, stopWords);
 
-        return videos.filter(v => {
+        return vList.filter(v => {
             const targetStr = (v.title + " " + v.desc).toLowerCase();
-            return keywords.some(k => targetStr.includes(k));
+            return keywords.length === 0 || keywords.some(k => targetStr.includes(k));
         });
     }
 
     function searchBlogs(query) {
-        if (typeof POSTS === "undefined") return [];
+        const bList = (typeof POSTS !== "undefined" && POSTS.length > 0) ? POSTS : blogsData;
+        if (!bList || bList.length === 0) return [];
+
         const stopWords = ["cari", "artikel", "blog", "tentang", "ada", "apakah", "baca", "atau"];
         const keywords = cleanQuery(query, stopWords);
 
-        return POSTS.filter(p => {
+        return bList.filter(p => {
             const targetStr = (p.title + " " + p.category + " " + p.excerpt + " " + (p.tags || []).join(" ")).toLowerCase();
-            return keywords.some(k => targetStr.includes(k));
+            return keywords.length === 0 || keywords.some(k => targetStr.includes(k));
         });
     }
 
-    // DATABASE PERINTAH & JAWABAN FAQ
     const siteActions = [
         {
             keywords: ["kuliah di mana", "universitas mana", "studi di mana", "kampus mana", "kuliah dimana"],
@@ -405,20 +411,25 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // AI BRAIN (PENCARIAN DIPRIORITASKAN)
     async function processQuery(query) {
         const input = query.toLowerCase().trim();
+        await ensureGlobalDataLoaded();
 
-        // 1. DAHULUKAN PENCARIAN VIDEO
         if (input.includes("video")) {
             const foundVideos = searchVideos(input);
             if (foundVideos.length > 0) {
-                const videoListHTML = foundVideos.map(v => `
-                    <div class="cert-detail-card" style="margin-top:6px;">
-                        <h4>🎬 ${v.title}</h4>
-                        <p>${v.desc}</p>
-                    </div>
-                `).join("");
+                const videoListHTML = foundVideos.map(v => {
+                    const watchUrl = v.url ? v.url.replace("/embed/", "/watch?v=") : "videos.html";
+                    return `
+                        <div class="cert-detail-card">
+                            <h4 style="color:#00f2fe;">🎬 ${v.title}</h4>
+                            <p>${v.desc}</p>
+                            <a href="${watchUrl}" target="_blank" rel="noopener noreferrer" class="ai-link-btn">
+                                <i data-lucide="play-circle" style="width:14px; height:14px;"></i> Tonton Video
+                            </a>
+                        </div>
+                    `;
+                }).join("");
 
                 return {
                     text: `Ditemukan **${foundVideos.length} video** yang relevan:`,
@@ -427,15 +438,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 2. DAHULUKAN PENCARIAN BLOG / ARTIKEL
         if (input.includes("artikel") || input.includes("blog") || input.includes("voip") || input.includes("linux")) {
             const foundBlogs = searchBlogs(input);
             if (foundBlogs.length > 0) {
                 const blogListHTML = foundBlogs.map(b => `
-                    <div class="cert-detail-card" style="margin-top:6px;">
-                        <h4>📰 ${b.title}</h4>
+                    <div class="cert-detail-card">
+                        <h4 style="color:#00f2fe;">📰 ${b.title}</h4>
                         <p><strong>Kategori:</strong> ${b.category}</p>
                         <p>${b.excerpt}</p>
+                        <a href="blog.html#post/${b.id}" class="ai-link-btn">
+                            <i data-lucide="book-open" style="width:14px; height:14px;"></i> Baca Artikel Lengkap
+                        </a>
                     </div>
                 `).join("");
 
@@ -446,7 +459,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 3. DAHULUKAN PENCARIAN SERTIFIKAT
         if (input.includes("sertifikat")) {
             const certs = await fetchCertificatesFromPage();
             const stopWords = ["cari", "sertifikat", "tampilkan", "tentang", "ada"];
@@ -465,7 +477,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 4. COCOKKAN ACTION / NAVIGASI / FAQ
         for (let item of siteActions) {
             if (item.keywords.some(k => input.includes(k))) {
                 return {
@@ -475,7 +486,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 5. SCRAPE ISI HALAMAN
         const sections = document.querySelectorAll("section, .about-card, .project-card, article, .video-card");
         for (let sec of sections) {
             const text = sec.textContent.replace(/\s+/g, ' ').trim();
@@ -483,13 +493,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (words.some(w => text.toLowerCase().includes(w))) {
                 const sentences = text.split(". ");
                 const matched = sentences.find(s => words.some(w => s.toLowerCase().includes(w)));
-                if (matched) {
-                    return { text: `Berdasarkan halaman ini: "${matched.trim()}."` };
-                }
+                if (matched) return { text: `Berdasarkan halaman ini: "${matched.trim()}."` };
             }
         }
 
-        // 6. FALLBACK
         return {
             text: "Maaf, saya belum menemukan data yang pas. Coba ketik perintah spesifik seperti: 'kuliah di mana', 'cari video algoritma', 'cari artikel voip', atau 'ke sertifikat'."
         };
@@ -510,6 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typingElem) typingElem.remove();
     }
 
+    // FUNGSI ANIMASI MENGETIK TEKS HURUF DEMI HURUF DENGAN KECEPATAN NATURAL
     function appendBotMsgWithTyping(textHTML, customHTML = "", onComplete = null) {
         const div = document.createElement("div");
         div.className = "ai-msg bot";
@@ -520,11 +528,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const plainText = tempDiv.textContent || tempDiv.innerText || "";
 
         let charIndex = 0;
-        const typingSpeed = 12;
+        const typingSpeed = 25; // Kecepatan mengetik ideal (ms per karakter)
 
         function typeNextChar() {
             if (charIndex < plainText.length) {
-                div.textContent = plainText.substring(0, charIndex + 1);
+                div.innerHTML = plainText.substring(0, charIndex + 1);
                 charIndex++;
                 aiBody.scrollTop = aiBody.scrollHeight;
                 setTimeout(typeNextChar, typingSpeed);
@@ -548,6 +556,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showTypingIndicator();
 
+        // Memberikan jeda indikator pengetikan (...) selama 600ms agar terasa seperti berpikir
         setTimeout(async () => {
             const result = await processQuery(text);
             removeTypingIndicator();
@@ -555,11 +564,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const customHTML = result.customHTML || "";
             appendBotMsgWithTyping(result.text, customHTML, () => {
                 speakText(result.text);
-                if (result.action) {
-                    setTimeout(() => result.action(), 500);
-                }
+                if (result.action) setTimeout(() => result.action(), 500);
             });
-        }, 400);
+        }, 600);
     }
 
     aiSend.addEventListener("click", () => handleSend());
@@ -626,7 +633,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const startDrag = (clientX, clientY, popup) => {
             isDragging = true;
             popup.classList.add("is-dragging", "is-dragged");
-
             startX = clientX;
             startY = clientY;
 
