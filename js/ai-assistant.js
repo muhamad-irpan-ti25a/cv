@@ -2,13 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("aiWidgetContainer");
     if (!container) return;
 
-    // Cache Data & Speech State
     let certificatesData = [];
     let isSpeechEnabled = false;
     const synth = window.speechSynthesis;
     let selectedVoice = null;
 
-    // Inisialisasi Suara Bahasa Indonesia secara eksplisit
     function initVoices() {
         if (!synth) return;
         const voices = synth.getVoices();
@@ -21,261 +19,56 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 1. Inject UI CSS & Structure
     container.innerHTML = `
         <style>
-            /* Typing Indicator */
-            .typing-indicator {
-                display: inline-flex;
-                align-items: center;
-                gap: 4px;
-                padding: 6px 10px;
-            }
-            .typing-indicator span {
-                width: 6px;
-                height: 6px;
-                background-color: currentColor;
-                border-radius: 50%;
-                opacity: 0.4;
-                animation: aiTypingBounce 1.2s infinite ease-in-out;
-            }
+            .typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; }
+            .typing-indicator span { width: 6px; height: 6px; background-color: currentColor; border-radius: 50%; opacity: 0.4; animation: aiTypingBounce 1.2s infinite ease-in-out; }
             .typing-indicator span:nth-child(1) { animation-delay: 0s; }
             .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
             .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-            @keyframes aiTypingBounce {
-                0%, 100% { transform: translateY(0); opacity: 0.4; }
-                50% { transform: translateY(-4px); opacity: 1; }
-            }
+            @keyframes aiTypingBounce { 0%, 100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-4px); opacity: 1; } }
 
-            /* Header Controls */
-            .ai-header-actions {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            .ai-icon-btn {
-                background: transparent;
-                border: none;
-                color: var(--text-dim, #94a3b8);
-                cursor: pointer;
-                padding: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 6px;
-                transition: color 0.2s, background 0.2s;
-            }
-            .ai-icon-btn:hover {
-                color: #00f2fe;
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .ai-icon-btn.active {
-                color: #00e676;
-            }
+            .ai-header-actions { display: flex; align-items: center; gap: 8px; }
+            .ai-icon-btn { background: transparent; border: none; color: var(--text-dim, #94a3b8); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: color 0.2s, background 0.2s; }
+            .ai-icon-btn:hover { color: #00f2fe; background: rgba(255, 255, 255, 0.1); }
+            .ai-icon-btn.active { color: #00e676; }
 
-            /* Quick Suggestion Chips */
-            .ai-suggestions {
-                display: flex;
-                gap: 6px;
-                overflow-x: auto;
-                padding: 6px 0;
-                margin-top: 6px;
-                scroll-snap-type: x mandatory;
-            }
-            .ai-chip {
-                background: rgba(0, 242, 254, 0.1);
-                border: 1px solid rgba(0, 242, 254, 0.25);
-                color: var(--primary-color, #00f2fe);
-                border-radius: 20px;
-                padding: 4px 10px;
-                font-size: 11px;
-                white-space: nowrap;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                scroll-snap-align: start;
-            }
-            .ai-chip:hover {
-                background: rgba(0, 242, 254, 0.25);
-                transform: translateY(-1px);
-            }
+            .ai-suggestions { display: flex; gap: 6px; overflow-x: auto; padding: 6px 0; margin-top: 6px; scroll-snap-type: x mandatory; }
+            .ai-chip { background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.25); color: var(--primary-color, #00f2fe); border-radius: 20px; padding: 4px 10px; font-size: 11px; white-space: nowrap; cursor: pointer; transition: all 0.2s ease; scroll-snap-align: start; }
+            .ai-chip:hover { background: rgba(0, 242, 254, 0.25); transform: translateY(-1px); }
 
-            /* Certificate Slider & Cards */
-            .cert-gallery-container {
-                margin-top: 8px;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-            }
-            .cert-filter-pills {
-                display: flex;
-                gap: 6px;
-                overflow-x: auto;
-                padding-bottom: 4px;
-            }
-            .cert-filter-btn {
-                background: rgba(255, 255, 255, 0.1);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 12px;
-                padding: 2px 10px;
-                font-size: 11px;
-                cursor: pointer;
-                white-space: nowrap;
-                color: inherit;
-            }
-            .cert-filter-btn.active {
-                background: #00f2fe;
-                color: #020617;
-                font-weight: bold;
-                border-color: #00f2fe;
-            }
-            .cert-cards-scroll {
-                display: flex;
-                gap: 10px;
-                overflow-x: auto;
-                padding-bottom: 6px;
-                scroll-snap-type: x mandatory;
-            }
-            .cert-card-item {
-                flex: 0 0 140px;
-                scroll-snap-align: start;
-                background: rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(0, 242, 254, 0.2);
-                border-radius: 8px;
-                overflow: hidden;
-                cursor: pointer;
-                transition: transform 0.2s, border-color 0.2s;
-            }
-            .cert-card-item:hover {
-                transform: translateY(-2px);
-                border-color: #00f2fe;
-            }
-            .cert-card-item img {
-                width: 100%;
-                height: 80px;
-                object-fit: cover;
-            }
-            .cert-card-info {
-                padding: 6px;
-            }
-            .cert-card-info h5 {
-                margin: 0;
-                font-size: 11px;
-                line-height: 1.2;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .cert-card-info span {
-                font-size: 10px;
-                color: #00f2fe;
-            }
+            .cert-gallery-container { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+            .cert-filter-pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+            .cert-filter-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 2px 10px; font-size: 11px; cursor: pointer; white-space: nowrap; color: inherit; }
+            .cert-filter-btn.active { background: #00f2fe; color: #020617; font-weight: bold; border-color: #00f2fe; }
+            .cert-cards-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+            .cert-card-item { flex: 0 0 140px; scroll-snap-align: start; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 8px; overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+            .cert-card-item:hover { transform: translateY(-2px); border-color: #00f2fe; }
+            .cert-card-item img { width: 100%; height: 80px; object-fit: cover; }
+            .cert-card-info { padding: 6px; }
+            .cert-card-info h5 { margin: 0; font-size: 11px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .cert-card-info span { font-size: 10px; color: #00f2fe; }
 
-            /* Certificate Detail View */
-            .cert-detail-card {
-                background: rgba(0, 0, 0, 0.35);
-                border: 1px solid rgba(0, 242, 254, 0.3);
-                border-radius: 10px;
-                padding: 10px;
-                margin-top: 8px;
-            }
-            .cert-detail-card img {
-                width: 100%;
-                border-radius: 6px;
-                margin-bottom: 8px;
-            }
-            .cert-detail-card h4 {
-                margin: 0 0 4px 0;
-                font-size: 13px;
-                color: #00f2fe;
-            }
-            .cert-detail-card p {
-                margin: 0 0 6px 0;
-                font-size: 11px;
-                line-height: 1.4;
-                color: #cbd5e1;
-            }
+            .cert-detail-card { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; padding: 10px; margin-top: 8px; }
+            .cert-detail-card img { width: 100%; border-radius: 6px; margin-bottom: 8px; }
+            .cert-detail-card h4 { margin: 0 0 4px 0; font-size: 13px; color: #00f2fe; }
+            .cert-detail-card p { margin: 0 0 6px 0; font-size: 11px; line-height: 1.4; color: #cbd5e1; }
 
-            /* Modern Welcome Card */
-            .ai-welcome-card {
-                background: rgba(0, 242, 254, 0.04);
-                border: 1px solid rgba(0, 242, 254, 0.2);
-                border-radius: 14px;
-                padding: 12px 14px;
-                margin-bottom: 6px;
-                backdrop-filter: blur(8px);
-            }
-            .ai-welcome-card p {
-                margin: 0 0 10px 0;
-                font-size: 0.85rem;
-                line-height: 1.5;
-                color: #e2e8f0;
-            }
-            .ai-welcome-header {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-bottom: 6px;
-                color: var(--primary-color, #00f2fe);
-                font-weight: 600;
-                font-size: 0.88rem;
-            }
-            .ai-welcome-header i {
-                width: 16px;
-                height: 16px;
-            }
+            .ai-welcome-card { background: rgba(0, 242, 254, 0.04); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 14px; padding: 12px 14px; margin-bottom: 6px; backdrop-filter: blur(8px); }
+            .ai-welcome-card p { margin: 0 0 10px 0; font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; }
+            .ai-welcome-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--primary-color, #00f2fe); font-weight: 600; font-size: 0.88rem; }
+            .ai-welcome-header i { width: 16px; height: 16px; }
 
-            /* Scrollbar Clean */
-            .ai-chat-body::-webkit-scrollbar-button,
-            .cert-cards-scroll::-webkit-scrollbar-button,
-            .cert-filter-pills::-webkit-scrollbar-button,
-            .ai-suggestions::-webkit-scrollbar-button {
-                display: none !important;
-                width: 0 !important;
-                height: 0 !important;
-            }
-            .cert-cards-scroll,
-            .cert-filter-pills,
-            .ai-suggestions {
-                -ms-overflow-style: -ms-autohide-scrollbar;
-            }
-            .ai-chat-body::-webkit-scrollbar,
-            .cert-cards-scroll::-webkit-scrollbar,
-            .cert-filter-pills::-webkit-scrollbar,
-            .ai-suggestions::-webkit-scrollbar {
-                height: 4px;
-                width: 4px;
-            }
-            .ai-chat-body::-webkit-scrollbar-track,
-            .cert-cards-scroll::-webkit-scrollbar-track,
-            .cert-filter-pills::-webkit-scrollbar-track,
-            .ai-suggestions::-webkit-scrollbar-track {
-                background: transparent;
-            }
-            .ai-chat-body::-webkit-scrollbar-thumb,
-            .cert-cards-scroll::-webkit-scrollbar-thumb,
-            .cert-filter-pills::-webkit-scrollbar-thumb,
-            .ai-suggestions::-webkit-scrollbar-thumb {
-                background: rgba(0, 242, 254, 0.3);
-                border-radius: 10px;
-                transition: background 0.3s ease;
-            }
-            .ai-chat-body::-webkit-scrollbar-thumb:hover,
-            .cert-cards-scroll::-webkit-scrollbar-thumb:hover,
-            .cert-filter-pills::-webkit-scrollbar-thumb:hover,
-            .ai-suggestions::-webkit-scrollbar-thumb:hover {
-                background: #00f2fe;
-            }
+            .ai-chat-body::-webkit-scrollbar-button, .cert-cards-scroll::-webkit-scrollbar-button, .cert-filter-pills::-webkit-scrollbar-button, .ai-suggestions::-webkit-scrollbar-button { display: none !important; width: 0 !important; height: 0 !important; }
+            .cert-cards-scroll, .cert-filter-pills, .ai-suggestions { -ms-overflow-style: -ms-autohide-scrollbar; }
+            .ai-chat-body::-webkit-scrollbar, .cert-cards-scroll::-webkit-scrollbar, .cert-filter-pills::-webkit-scrollbar, .ai-suggestions::-webkit-scrollbar { height: 4px; width: 4px; }
+            .ai-chat-body::-webkit-scrollbar-track, .cert-cards-scroll::-webkit-scrollbar-track, .cert-filter-pills::-webkit-scrollbar-track, .ai-suggestions::-webkit-scrollbar-track { background: transparent; }
+            .ai-chat-body::-webkit-scrollbar-thumb, .cert-cards-scroll::-webkit-scrollbar-thumb, .cert-filter-pills::-webkit-scrollbar-thumb, .ai-suggestions::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.3); border-radius: 10px; transition: background 0.3s ease; }
+            .ai-chat-body::-webkit-scrollbar-thumb:hover, .cert-cards-scroll::-webkit-scrollbar-thumb:hover, .cert-filter-pills::-webkit-scrollbar-thumb:hover, .ai-suggestions::-webkit-scrollbar-thumb:hover { background: #00f2fe; }
 
-            /* Prevent Zoom & Fix Input */
-            .ai-popup-chat {
-                will-change: left, top;
-            }
-            .ai-chat-footer input {
-                font-size: 16px !important;
-                touch-action: manipulation;
-            }
+            .ai-popup-chat { will-change: left, top; }
+            .ai-chat-footer input { font-size: 16px !important; touch-action: manipulation; }
 
-            /* Voice Icon Toggle Display Fix */
             .ai-icon-btn .icon-speech-off { display: block; }
             .ai-icon-btn .icon-speech-on { display: none; }
             .ai-icon-btn.active .icon-speech-off { display: none; }
@@ -292,8 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="ai-brand">
                     <div class="ai-avatar"><i data-lucide="sparkles"></i></div>
                     <div>
-                        <h4>Smart AI Agent v2</h4>
-                        <span class="status-online">Full Control Mode</span>
+                        <h4>Smart AI Agent v4</h4>
+                        <span class="status-online">Full Intelligent Search Active</span>
                     </div>
                 </div>
                 <div class="ai-header-actions">
@@ -313,21 +106,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="ai-welcome-card">
                         <div class="ai-welcome-header">
                             <i data-lucide="sparkles"></i>
-                            <span>Spatial Assistant Ready</span>
+                            <span>Spatial AI Assistant Ready</span>
                         </div>
-                        <p>Halo! Saya AI Agent web ini. Ada yang bisa saya bantu hari ini? Silakan pilih opsi cepat di bawah atau ketikkan pertanyaan Anda:</p>
+                        <p>Halo! Saya AI Agent serbaguna. Silakan tanya video, artikel, latar belakang kuliah, sertifikat, atau berpindah menu:</p>
                         <div class="ai-suggestions">
+                            <button class="ai-chip" data-prompt="Kuliah di mana?">
+                                <i data-lucide="graduation-cap"></i> Info Kuliah
+                            </button>
+                            <button class="ai-chip" data-prompt="Cari video algoritma">
+                                <i data-lucide="video"></i> Video Algoritma
+                            </button>
+                            <button class="ai-chip" data-prompt="Cari artikel voip">
+                                <i data-lucide="newspaper"></i> Artikel VoIP
+                            </button>
                             <button class="ai-chip" data-prompt="Tampilkan sertifikat">
-                                <i data-lucide="award"></i> Semua Sertifikat
-                            </button>
-                            <button class="ai-chip" data-prompt="Cari sertifikat linux">
-                                <i data-lucide="terminal"></i> Sertifikat Linux
-                            </button>
-                            <button class="ai-chip" data-prompt="Hubungi">
-                                <i data-lucide="mail"></i> Form Kontak
-                            </button>
-                            <button class="ai-chip" data-prompt="Ganti tema">
-                                <i data-lucide="moon"></i> Ubah Tampilan
+                                <i data-lucide="award"></i> Sertifikat
                             </button>
                         </div>
                     </div>
@@ -335,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="ai-chat-footer">
-                <input type="text" id="aiInput" placeholder="Ketik perintah atau 'Cari sertifikat [topik]'..." autocomplete="off">
+                <input type="text" id="aiInput" placeholder="Tanya sesuatu atau beri perintah..." autocomplete="off">
                 <button id="aiSend" class="btn-send"><i data-lucide="send"></i></button>
             </div>
         </div>
@@ -343,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // DOM Elements
     const aiBtn = document.getElementById("aiBtn");
     const aiWindow = document.getElementById("aiWindow");
     const aiClose = document.getElementById("aiClose");
@@ -353,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const aiVoiceToggle = document.getElementById("aiVoiceToggle");
     const aiClearChat = document.getElementById("aiClearChat");
 
-    // Toggle Chatbox
     aiBtn.addEventListener("click", () => {
         aiWindow.classList.toggle("active");
         if (aiWindow.classList.contains("active")) aiInput.focus();
@@ -364,7 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
         stopSpeech();
     });
 
-    // Toggle Voice Mode (Toggle Class tanpa Mengubah Elemen DOM - Bebas Flicker & Responsif)
     aiVoiceToggle.addEventListener("click", () => {
         isSpeechEnabled = !isSpeechEnabled;
         aiVoiceToggle.classList.toggle("active", isSpeechEnabled);
@@ -376,28 +166,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Clear Chat
     aiClearChat.addEventListener("click", () => {
         stopSpeech();
         aiBody.innerHTML = `
             <div class="ai-msg bot">
                 Obrolan telah dibersihkan! Ada yang ingin Anda tanyakan lagi?
                 <div class="ai-suggestions">
-                    <button class="ai-chip" data-prompt="Tampilkan sertifikat">🏆 Semua Sertifikat</button>
-                    <button class="ai-chip" data-prompt="Ke proyek">🚀 Lihat Proyek</button>
-                    <button class="ai-chip" data-prompt="Hubungi">✉️ Form Kontak</button>
+                    <button class="ai-chip" data-prompt="Kuliah di mana?">🎓 Info Kuliah</button>
+                    <button class="ai-chip" data-prompt="Cari video algoritma">🎥 Video Algoritma</button>
+                    <button class="ai-chip" data-prompt="Cari artikel voip">📰 Artikel VoIP</button>
                 </div>
             </div>
         `;
         if (typeof lucide !== 'undefined') lucide.createIcons();
     });
 
-    // Hentikan Suara Sepenuhnya
     function stopSpeech() {
         if (synth) synth.cancel();
     }
 
-    // Voice Synthesis Reader
     function speakText(text) {
         if (!isSpeechEnabled || !synth) return;
         stopSpeech();
@@ -416,21 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 50);
     }
 
-    /* ============================================================
-       AUTO-STOP SPEECH SYSTEM ON LEAVE / SWITCH PAGE
-       ============================================================ */
-    // 1. Hentikan suara saat meninggalkan halaman (klik link ke page lain)
     window.addEventListener("beforeunload", () => stopSpeech());
     window.addEventListener("pagehide", () => stopSpeech());
-
-    // 2. Hentikan suara saat berpindah tab browser / minimize
     document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-            stopSpeech();
-        }
+        if (document.hidden) stopSpeech();
     });
 
-    // Dynamic Fetcher untuk Membaca `certificates.html`
     async function fetchCertificatesFromPage() {
         if (certificatesData.length > 0) return certificatesData;
 
@@ -506,56 +284,98 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Site Actions Mapping
+    // CLEAN FILTER KEYWORDS LOGIC
+    function cleanQuery(query, stopWords) {
+        let cleaned = query.toLowerCase();
+        stopWords.forEach(word => {
+            cleaned = cleaned.replace(new RegExp("\\b" + word + "\\b", "gi"), "");
+        });
+        return cleaned.trim().split(/\s+/).filter(k => k.length > 1);
+    }
+
+    function searchVideos(query) {
+        if (typeof videos === "undefined") return [];
+        const stopWords = ["cari", "video", "tentang", "ada", "tampilkan", "apa", "apakah", "dikit", "di"];
+        const keywords = cleanQuery(query, stopWords);
+
+        return videos.filter(v => {
+            const targetStr = (v.title + " " + v.desc).toLowerCase();
+            return keywords.some(k => targetStr.includes(k));
+        });
+    }
+
+    function searchBlogs(query) {
+        if (typeof POSTS === "undefined") return [];
+        const stopWords = ["cari", "artikel", "blog", "tentang", "ada", "apakah", "baca", "atau"];
+        const keywords = cleanQuery(query, stopWords);
+
+        return POSTS.filter(p => {
+            const targetStr = (p.title + " " + p.category + " " + p.excerpt + " " + (p.tags || []).join(" ")).toLowerCase();
+            return keywords.some(k => targetStr.includes(k));
+        });
+    }
+
+    // DATABASE PERINTAH & JAWABAN FAQ
     const siteActions = [
         {
-            keywords: ["tampilkan sertifikat", "tunjukkan sertifikat", "lihat sertifikat", "daftar sertifikat", "sertifikat"],
-            reply: "Berikut daftar sertifikat yang berhasil diambil langsung dari halaman `certificates.html`. Klik salah satu untuk info detail:",
-            type: "SHOW_CERTIFICATES"
+            keywords: ["kuliah di mana", "universitas mana", "studi di mana", "kampus mana", "kuliah dimana"],
+            reply: "Saya sedang menempuh pendidikan jenjang S1 di **Universitas Nusa Putra**, mengambil jurusan **Teknik Informatika** (Angkatan 2025)."
         },
         {
-            keywords: ["buka kontak", "hubungi", "kirim pesan", "form kontak", "contact"],
-            reply: "Siap! Membuka formulir kontak untuk Anda...",
+            keywords: ["trilogi", "nusa putra", "amor deus", "amor parentium", "amor conservis"],
+            reply: "Trilogi Nusa Putra terdiri dari 3 nilai luhur:<br>1. **Amor Deus**: Cinta kasih kepada Tuhan.<br>2. **Amor Parentium**: Cinta kasih kepada Orang Tua dan Guru.<br>3. **Amor Conservis**: Cinta kasih kepada sesama manusia."
+        },
+        {
+            keywords: ["siapa namamu", "siapa kamu", "siapa fathan", "siapa irpan", "biodata"],
+            reply: "Website portofolio ini merupakan karya **Muhammad Zahril Fathan** (bersama dokumentasi karya Muhamad Irpan) — Mahasiswa Teknik Informatika Universitas Nusa Putra."
+        },
+        {
+            keywords: ["ke home", "buka home", "halaman utama", "ke beranda"],
+            reply: "Siap! Membuka halaman Home & About...",
+            action: () => { window.location.href = "index.html"; }
+        },
+        {
+            keywords: ["ke skill", "buka skill", "halaman skill", "keahlian"],
+            reply: "Siap! Membuka halaman Skills & Keahlian...",
+            action: () => { window.location.href = "skills.html"; }
+        },
+        {
+            keywords: ["ke project", "buka project", "halaman project", "proyek"],
+            reply: "Siap! Membuka halaman Projects...",
+            action: () => { window.location.href = "projects.html"; }
+        },
+        {
+            keywords: ["ke video", "buka video", "halaman video", "semua video"],
+            reply: "Siap! Membuka halaman Videos & Dokumentasi...",
+            action: () => { window.location.href = "videos.html"; }
+        },
+        {
+            keywords: ["ke blog", "buka blog", "halaman blog", "semua blog"],
+            reply: "Siap! Membuka halaman Blog & Catatan...",
+            action: () => { window.location.href = "blog.html"; }
+        },
+        {
+            keywords: ["buka kontak", "hubungi", "kirim pesan", "form kontak"],
+            reply: "Siap! Membuka formulir kontak...",
             action: () => {
                 const btn = document.getElementById("openContactModal") || document.getElementById("openContactModalHero");
                 if (btn) btn.click();
+                else window.location.href = "index.html#contact";
             }
         },
         {
-            keywords: ["ganti tema", "dark mode", "light mode", "ubah mode", "mode terang", "mode gelap"],
+            keywords: ["ganti tema", "dark mode", "light mode", "ubah mode"],
             reply: "Siap! Mengubah mode tampilan tema...",
             action: () => {
-                const themeBtn = document.getElementById("themeToggle");
+                const themeBtn = document.getElementById("themeToggle") || document.getElementById("themeToggleBtn");
                 if (themeBtn) themeBtn.click();
             }
-        },
-        {
-            keywords: ["ke tentang", "ke about", "scroll ke about", "scroll tentang"],
-            reply: "Siap! Menggulung layar ke bagian Tentang Saya...",
-            action: () => {
-                const target = document.getElementById("about");
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-            }
-        },
-        {
-            keywords: ["ke proyek", "ke project", "scroll ke project", "scroll proyek"],
-            reply: "Siap! Menggulung layar ke bagian Featured Projects...",
-            action: () => {
-                const target = document.getElementById("projects");
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-            }
-        },
-        { keywords: ["halaman skill", "buka skill", "ke skill"], reply: "Siap! Membuka halaman Skills...", action: () => { window.location.href = "skills.html"; } },
-        { keywords: ["halaman project", "buka project", "semua project"], reply: "Siap! Membuka halaman Projects...", action: () => { window.location.href = "projects.html"; } },
-        { keywords: ["halaman sertifikat", "buka sertifikat", "ke sertifikat"], reply: "Siap! Membuka halaman Certificates...", action: () => { window.location.href = "certificates.html"; } },
-        { keywords: ["halaman video", "buka video", "ke video"], reply: "Siap! Membuka halaman Videos...", action: () => { window.location.href = "videos.html"; } },
-        { keywords: ["halaman blog", "buka blog", "ke blog"], reply: "Siap! Membuka halaman Blog...", action: () => { window.location.href = "blog.html"; } }
+        }
     ];
 
-    // Render Component Gallery Sertifikat
     function createCertificateGalleryHTML(data, filterCategory = "All") {
         if (!data || data.length === 0) {
-            return `<div style="margin-top:6px; font-size:12px; color:#ef4444;">Tidak dapat menemukan data sertifikat di halaman certificates.html. Pastikan website dibuka via Live Server.</div>`;
+            return `<div style="margin-top:6px; font-size:12px; color:#ef4444;">Tidak ada sertifikat yang cocok.</div>`;
         }
 
         const categories = ["All", ...new Set(data.map(c => c.category))];
@@ -585,87 +405,102 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // Search Sertifikat berdasarkan Query
-    async function searchCertificatesByQuery(query) {
-        const certs = await fetchCertificatesFromPage();
-        const keywords = query.toLowerCase().replace("cari sertifikat", "").replace("sertifikat", "").trim().split(" ");
-        
-        return certs.filter(cert => {
-            const targetStr = (cert.title + " " + cert.category + " " + cert.subCategory + " " + cert.description).toLowerCase();
-            return keywords.some(k => k.length > 1 && targetStr.includes(k));
-        });
-    }
-
-    // DOM Scraper
-    function scrapePageContent() {
-        const sections = document.querySelectorAll("section, .about-card, .project-card");
-        const knowledge = [];
-
-        sections.forEach(sec => {
-            const title = sec.querySelector("h1, h2, h3, .section-title")?.textContent || "";
-            const text = sec.textContent.replace(/\s+/g, ' ').trim();
-            if (title || text) knowledge.push({ title: title.toLowerCase(), text: text });
-        });
-
-        return knowledge;
-    }
-
-    // AI Query Brain
+    // AI BRAIN (PENCARIAN DIPRIORITASKAN)
     async function processQuery(query) {
         const input = query.toLowerCase().trim();
 
-        if (input.includes("cari sertifikat") || (input.includes("sertifikat") && input.split(" ").length > 1)) {
-            const searchResults = await searchCertificatesByQuery(input);
+        // 1. DAHULUKAN PENCARIAN VIDEO
+        if (input.includes("video")) {
+            const foundVideos = searchVideos(input);
+            if (foundVideos.length > 0) {
+                const videoListHTML = foundVideos.map(v => `
+                    <div class="cert-detail-card" style="margin-top:6px;">
+                        <h4>🎬 ${v.title}</h4>
+                        <p>${v.desc}</p>
+                    </div>
+                `).join("");
+
+                return {
+                    text: `Ditemukan **${foundVideos.length} video** yang relevan:`,
+                    customHTML: videoListHTML
+                };
+            }
+        }
+
+        // 2. DAHULUKAN PENCARIAN BLOG / ARTIKEL
+        if (input.includes("artikel") || input.includes("blog") || input.includes("voip") || input.includes("linux")) {
+            const foundBlogs = searchBlogs(input);
+            if (foundBlogs.length > 0) {
+                const blogListHTML = foundBlogs.map(b => `
+                    <div class="cert-detail-card" style="margin-top:6px;">
+                        <h4>📰 ${b.title}</h4>
+                        <p><strong>Kategori:</strong> ${b.category}</p>
+                        <p>${b.excerpt}</p>
+                    </div>
+                `).join("");
+
+                return {
+                    text: `Ditemukan **${foundBlogs.length} artikel blog** yang cocok:`,
+                    customHTML: blogListHTML
+                };
+            }
+        }
+
+        // 3. DAHULUKAN PENCARIAN SERTIFIKAT
+        if (input.includes("sertifikat")) {
+            const certs = await fetchCertificatesFromPage();
+            const stopWords = ["cari", "sertifikat", "tampilkan", "tentang", "ada"];
+            const keywords = cleanQuery(input, stopWords);
+
+            const searchResults = certs.filter(cert => {
+                const targetStr = (cert.title + " " + cert.category + " " + cert.subCategory + " " + cert.description).toLowerCase();
+                return keywords.length === 0 || keywords.some(k => targetStr.includes(k));
+            });
+
             if (searchResults.length > 0) {
                 return {
-                    text: `Ditemukan **${searchResults.length} sertifikat** yang cocok dengan pencarian Anda:`,
+                    text: `Ditemukan **${searchResults.length} sertifikat**:`,
                     customHTML: createCertificateGalleryHTML(searchResults, "All")
                 };
             }
         }
 
+        // 4. COCOKKAN ACTION / NAVIGASI / FAQ
         for (let item of siteActions) {
             if (item.keywords.some(k => input.includes(k))) {
                 return {
                     text: item.reply,
-                    type: item.type || null,
                     action: item.action || null
                 };
             }
         }
 
-        const scrapedData = scrapePageContent();
-        for (let data of scrapedData) {
+        // 5. SCRAPE ISI HALAMAN
+        const sections = document.querySelectorAll("section, .about-card, .project-card, article, .video-card");
+        for (let sec of sections) {
+            const text = sec.textContent.replace(/\s+/g, ' ').trim();
             const words = input.split(" ").filter(w => w.length > 2);
-            const isMatch = words.some(word => data.text.toLowerCase().includes(word));
-            
-            if (isMatch) {
-                const sentences = data.text.split(". ");
-                const matchedSentence = sentences.find(s => words.some(w => s.toLowerCase().includes(w)));
-                if (matchedSentence) {
-                    return {
-                        text: `Berdasarkan informasi halaman ini: "${matchedSentence.trim()}."`
-                    };
+            if (words.some(w => text.toLowerCase().includes(w))) {
+                const sentences = text.split(". ");
+                const matched = sentences.find(s => words.some(w => s.toLowerCase().includes(w)));
+                if (matched) {
+                    return { text: `Berdasarkan halaman ini: "${matched.trim()}."` };
                 }
             }
         }
 
+        // 6. FALLBACK
         return {
-            text: "Maaf, saya belum memahami perintah tersebut. Coba klik opsi di bawah atau ketikkan kata kunci seperti: 'cari sertifikat linux', 'buka kontak', atau 'ganti tema'."
+            text: "Maaf, saya belum menemukan data yang pas. Coba ketik perintah spesifik seperti: 'kuliah di mana', 'cari video algoritma', 'cari artikel voip', atau 'ke sertifikat'."
         };
     }
 
-    // UI Helpers (DENGAN EFEK MENGETIK / TYPING EFFECT)
     function showTypingIndicator() {
         removeTypingIndicator();
         const div = document.createElement("div");
         div.className = "ai-msg bot typing-msg";
         div.id = "aiTyping";
-        div.innerHTML = `
-            <div class="typing-indicator">
-                <span></span><span></span><span></span>
-            </div>
-        `;
+        div.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
         aiBody.appendChild(div);
         aiBody.scrollTop = aiBody.scrollHeight;
     }
@@ -675,7 +510,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typingElem) typingElem.remove();
     }
 
-    // Fungsi Efek Mengetik Teks Karakter demi Karakter
     function appendBotMsgWithTyping(textHTML, customHTML = "", onComplete = null) {
         const div = document.createElement("div");
         div.className = "ai-msg bot";
@@ -686,7 +520,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const plainText = tempDiv.textContent || tempDiv.innerText || "";
 
         let charIndex = 0;
-        const typingSpeed = 15;
+        const typingSpeed = 12;
 
         function typeNextChar() {
             if (charIndex < plainText.length) {
@@ -718,13 +552,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await processQuery(text);
             removeTypingIndicator();
 
-            if (result.type === "SHOW_CERTIFICATES") {
-                const certs = await fetchCertificatesFromPage();
-                const customHTML = createCertificateGalleryHTML(certs, "All");
-                appendBotMsgWithTyping(result.text, customHTML, () => speakText(result.text));
-                return;
-            }
-
             const customHTML = result.customHTML || "";
             appendBotMsgWithTyping(result.text, customHTML, () => {
                 speakText(result.text);
@@ -732,7 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => result.action(), 500);
                 }
             });
-        }, 500);
+        }, 400);
     }
 
     aiSend.addEventListener("click", () => handleSend());
@@ -743,18 +570,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function appendMsg(msg, sender) {
         const div = document.createElement("div");
         div.className = `ai-msg ${sender}`;
-        
-        if (sender === "user") {
-            div.textContent = msg;
-        } else {
-            div.innerHTML = msg;
-        }
-
+        div.innerHTML = msg;
         aiBody.appendChild(div);
         aiBody.scrollTop = aiBody.scrollHeight;
     }
 
-    // Event Delegation (Chips, Filter, & Certificate Detail)
     aiBody.addEventListener("click", (e) => {
         if (e.target.classList.contains("ai-chip")) {
             const prompt = e.target.getAttribute("data-prompt");
@@ -790,14 +610,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     `;
                     const introText = `Berikut detail untuk sertifikat ${cert.title}:`;
                     appendBotMsgWithTyping(introText, detailHTML, () => speakText(introText));
-                }, 400);
+                }, 300);
             }
         }
     });
 
-    /* ============================================================
-       PRECISE DRAGGABLE FORM SYSTEM (NO FLICKER & FAST DRAG)
-       ============================================================ */
     function initDraggableAIChat() {
         let isDragging = false;
         let startX = 0, startY = 0;
@@ -848,12 +665,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!isDragging) return;
             isDragging = false;
             const popup = getPopup();
-            if (popup) {
-                popup.classList.remove("is-dragging");
-            }
+            if (popup) popup.classList.remove("is-dragging");
         };
 
-        // --- MOUSE DRAG (DESKTOP) ---
         document.addEventListener("mousedown", (e) => {
             const popup = getPopup();
             if (!popup) return;
@@ -867,7 +681,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (isHeader || (tapLength < 350 && tapLength > 0)) {
                 if (e.target.tagName === 'INPUT' && !isHeader) return;
-
                 e.preventDefault();
                 startDrag(e.clientX, e.clientY, popup);
                 lastTapTime = 0;
@@ -883,11 +696,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        document.addEventListener("mouseup", () => {
-            stopDrag();
-        });
+        document.addEventListener("mouseup", () => stopDrag());
 
-        // --- TOUCH DRAG (MOBILE / HP) ---
         document.addEventListener("touchstart", (e) => {
             const popup = getPopup();
             if (!popup) return;
@@ -901,7 +711,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (isHeader || (tapLength < 350 && tapLength > 0)) {
                 if (e.target.tagName === 'INPUT' && !isHeader) return;
-
                 const touch = e.touches[0];
                 startDrag(touch.clientX, touch.clientY, popup);
                 lastTapTime = 0;
@@ -918,9 +727,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }, { passive: false });
 
-        document.addEventListener("touchend", () => {
-            stopDrag();
-        });
+        document.addEventListener("touchend", () => stopDrag());
     }
 
     initDraggableAIChat();
