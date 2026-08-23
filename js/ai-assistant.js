@@ -5,6 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let certificatesData = [];
     let videosData = [];
     let blogsData = [];
+    
+    // Fallback data manual jika file Excel belum dibuat/gagal dimuat
+    let excelKnowledgeData = [
+        { Keyword: "hobi, kegemaran, suka apa", Answer: "Hobi saya adalah koding, mengeksplorasi teknologi web modern, dan mendaki gunung." },
+        { Keyword: "pengalaman, magang, kerja", Answer: "Saya memiliki pengalaman dalam pengembangan web front-end, pengelolaan server Linux, dan perancangan UI/UX." },
+        { Keyword: "sosmed, instagram, github, linkedin", Answer: "Kamu bisa terhubung melalui akun GitHub dan LinkedIn resmi yang tertera di bagian footer website ini!" }
+    ];
+
     let isSpeechEnabled = false;
     const synth = window.speechSynthesis;
     let selectedVoice = null;
@@ -19,7 +27,29 @@ document.addEventListener("DOMContentLoaded", () => {
         if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = initVoices;
     }
 
+    async function loadExcelKnowledge() {
+        try {
+            if (typeof XLSX === "undefined") return;
+            const response = await fetch("knowledge.xlsx");
+            if (!response.ok) return;
+
+            const arrayBuffer = await response.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: "array" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            const sheetData = XLSX.utils.sheet_to_json(worksheet);
+            if (sheetData && sheetData.length > 0) {
+                excelKnowledgeData = sheetData; // Menimpa dengan data dari Excel jika berhasil
+            }
+        } catch (error) {
+            console.log("Menggunakan database pengetahuan bawaan (Excel opsional).");
+        }
+    }
+
     async function ensureGlobalDataLoaded() {
+        await loadExcelKnowledge();
+
         if (typeof videos !== "undefined" && videos.length > 0) {
             videosData = videos;
         } else if (videosData.length === 0) {
@@ -131,8 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="ai-brand">
                     <div class="ai-avatar"><i data-lucide="sparkles"></i></div>
                     <div>
-                        <h4>Smart AI Agent v5.2</h4>
-                        <span class="status-online">Global Universal Search</span>
+                        <h4>Smart AI Agent v6.1</h4>
+                        <span class="status-online">Safe Knowledge Engine</span>
                     </div>
                 </div>
                 <div class="ai-header-actions">
@@ -154,19 +184,19 @@ document.addEventListener("DOMContentLoaded", () => {
                             <i data-lucide="sparkles"></i>
                             <span>Spatial AI Assistant Ready</span>
                         </div>
-                        <p>Halo! Saya AI Agent serbaguna. Tanya video, blog, sertifikat, atau informasi apapun dari halaman manapun:</p>
+                        <p>Halo! Saya AI Agent serbaguna. Tanya hobi, video, blog, sertifikat, atau informasi apapun secara interaktif:</p>
                         <div class="ai-suggestions">
+                            <button class="ai-chip" data-prompt="Apa hobimu?">
+                                <i data-lucide="smile"></i> Apa Hobimu?
+                            </button>
                             <button class="ai-chip" data-prompt="Kuliah di mana?">
                                 <i data-lucide="graduation-cap"></i> Info Kuliah
                             </button>
+                            <button class="ai-chip" data-prompt="Rekomendasikan proyek">
+                                <i data-lucide="folder"></i> Rekomendasi Proyek
+                            </button>
                             <button class="ai-chip" data-prompt="Cari video algoritma">
                                 <i data-lucide="video"></i> Video Algoritma
-                            </button>
-                            <button class="ai-chip" data-prompt="Cari artikel voip">
-                                <i data-lucide="newspaper"></i> Artikel VoIP
-                            </button>
-                            <button class="ai-chip" data-prompt="Tampilkan sertifikat">
-                                <i data-lucide="award"></i> Sertifikat
                             </button>
                         </div>
                     </div>
@@ -174,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="ai-chat-footer">
-                <input type="text" id="aiInput" placeholder="Tanya video, blog, sertifikat, atau menu..." autocomplete="off">
+                <input type="text" id="aiInput" placeholder="Tanya sesuatu atau pilih opsi di atas..." autocomplete="off">
                 <button id="aiSend" class="btn-send"><i data-lucide="send"></i></button>
             </div>
         </div>
@@ -214,9 +244,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="ai-msg bot">
                 Obrolan telah dibersihkan! Ada yang ingin Anda tanyakan lagi?
                 <div class="ai-suggestions">
+                    <button class="ai-chip" data-prompt="Apa hobimu?">😊 Apa Hobimu?</button>
                     <button class="ai-chip" data-prompt="Kuliah di mana?">🎓 Info Kuliah</button>
-                    <button class="ai-chip" data-prompt="Cari video algoritma">🎥 Video Algoritma</button>
-                    <button class="ai-chip" data-prompt="Cari artikel voip">📰 Artikel VoIP</button>
+                    <button class="ai-chip" data-prompt="Rekomendasikan proyek">🚀 Rekomendasi Proyek</button>
                 </div>
             </div>
         `;
@@ -324,16 +354,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const siteActions = [
         {
+            keywords: ["rekomendasikan proyek", "pilihkan proyek", "proyek mana"],
+            reply: "Tentu! Jenis proyek apa yang paling ingin Anda lihat?",
+            customHTML: `
+                <div class="ai-suggestions" style="margin-top:8px;">
+                    <button class="ai-chip" data-prompt="ke project">🚀 Semua Proyek</button>
+                    <button class="ai-chip" data-prompt="cari artikel web">💻 Web Development</button>
+                    <button class="ai-chip" data-prompt="cari video algoritma">🧠 Algoritma & AI</button>
+                </div>
+            `
+        },
+        {
             keywords: ["kuliah di mana", "universitas mana", "studi di mana", "kampus mana", "kuliah dimana"],
-            reply: "Saya sedang menempuh pendidikan jenjang S1 di **Universitas Nusa Putra**, mengambil jurusan **Teknik Informatika** (Angkatan 2025)."
+            reply: "Saya sedang menempuh pendidikan S1 di **Universitas Nusa Putra**, jurusan **Teknik Informatika**."
         },
         {
             keywords: ["trilogi", "nusa putra", "amor deus", "amor parentium", "amor conservis"],
-            reply: "Trilogi Nusa Putra terdiri dari 3 nilai luhur:<br>1. **Amor Deus**: Cinta kasih kepada Tuhan.<br>2. **Amor Parentium**: Cinta kasih kepada Orang Tua dan Guru.<br>3. **Amor Conservis**: Cinta kasih kepada sesama manusia."
+            reply: "Trilogi Nusa Putra terdiri dari 3 nilai luhur:<br>1. **Amor Deus**: Cinta kasih kepada Tuhan.<br>2. **Amor Parentium**: Cinta kasih kepada Orang Tua/Guru.<br>3. **Amor Conservis**: Cinta kasih kepada sesama manusia."
         },
         {
-            keywords: ["siapa namamu", "siapa kamu", "siapa fathan", "siapa irpan", "biodata"],
-            reply: "Website portofolio ini merupakan karya **Muhammad Zahril Fathan** (bersama dokumentasi karya Muhamad Irpan) — Mahasiswa Teknik Informatika Universitas Nusa Putra."
+            keywords: ["siapa namamu", "siapa kamu", "siapa fathan", "biodata"],
+            reply: "Website ini merupakan portofolio interaktif karya **Muhammad Zahril Fathan** — Mahasiswa Teknik Informatika Universitas Nusa Putra."
         },
         {
             keywords: ["ke home", "buka home", "halaman utama", "ke beranda"],
@@ -415,6 +456,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const input = query.toLowerCase().trim();
         await ensureGlobalDataLoaded();
 
+        // 1. CEK DARI DATABASE PENGETAHUAN (EXCEL / FALLBACK)
+        if (excelKnowledgeData && excelKnowledgeData.length > 0) {
+            for (let row of excelKnowledgeData) {
+                if (row.Keyword) {
+                    const keys = row.Keyword.toLowerCase().split(",");
+                    if (keys.some(k => input.includes(k.trim()))) {
+                        return { text: row.Answer || "Informasi ditemukan." };
+                    }
+                }
+            }
+        }
+
+        // 2. PENCARIAN VIDEO
         if (input.includes("video")) {
             const foundVideos = searchVideos(input);
             if (foundVideos.length > 0) {
@@ -438,6 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // 3. PENCARIAN BLOG / ARTIKEL
         if (input.includes("artikel") || input.includes("blog") || input.includes("voip") || input.includes("linux")) {
             const foundBlogs = searchBlogs(input);
             if (foundBlogs.length > 0) {
@@ -459,6 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // 4. PENCARIAN SERTIFIKAT
         if (input.includes("sertifikat")) {
             const certs = await fetchCertificatesFromPage();
             const stopWords = ["cari", "sertifikat", "tampilkan", "tentang", "ada"];
@@ -477,15 +533,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // 5. SITE ACTIONS & PERCAKAPAN
         for (let item of siteActions) {
             if (item.keywords.some(k => input.includes(k))) {
                 return {
-                    text: item.reply,
+                    text: item.reply || "",
+                    customHTML: item.customHTML || "",
                     action: item.action || null
                 };
             }
         }
 
+        // 6. SCRAPING ISI HALAMAN (FALLBACK)
         const sections = document.querySelectorAll("section, .about-card, .project-card, article, .video-card");
         for (let sec of sections) {
             const text = sec.textContent.replace(/\s+/g, ' ').trim();
@@ -498,7 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return {
-            text: "Maaf, saya belum menemukan data yang pas. Coba ketik perintah spesifik seperti: 'kuliah di mana', 'cari video algoritma', 'cari artikel voip', atau 'ke sertifikat'."
+            text: "Maaf, saya belum menemukan jawaban yang tepat. Coba tanyakan hal seperti: 'apa hobimu', 'kuliah di mana', 'cari video algoritma', atau 'ke sertifikat'."
         };
     }
 
@@ -517,7 +576,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typingElem) typingElem.remove();
     }
 
-    // FUNGSI ANIMASI MENGETIK TEKS HURUF DEMI HURUF DENGAN KECEPATAN NATURAL
     function appendBotMsgWithTyping(textHTML, customHTML = "", onComplete = null) {
         const div = document.createElement("div");
         div.className = "ai-msg bot";
@@ -528,7 +586,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const plainText = tempDiv.textContent || tempDiv.innerText || "";
 
         let charIndex = 0;
-        const typingSpeed = 25; // Kecepatan mengetik ideal (ms per karakter)
+        const typingSpeed = 20;
 
         function typeNextChar() {
             if (charIndex < plainText.length) {
@@ -556,17 +614,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showTypingIndicator();
 
-        // Memberikan jeda indikator pengetikan (...) selama 600ms agar terasa seperti berpikir
         setTimeout(async () => {
             const result = await processQuery(text);
             removeTypingIndicator();
 
+            const safeText = result.text || "Baik, ini informasinya:";
             const customHTML = result.customHTML || "";
-            appendBotMsgWithTyping(result.text, customHTML, () => {
-                speakText(result.text);
+            
+            appendBotMsgWithTyping(safeText, customHTML, () => {
+                speakText(safeText);
                 if (result.action) setTimeout(() => result.action(), 500);
             });
-        }, 600);
+        }, 500);
     }
 
     aiSend.addEventListener("click", () => handleSend());
