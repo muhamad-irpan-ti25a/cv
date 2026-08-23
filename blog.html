@@ -20,6 +20,7 @@
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         [data-aos] {
@@ -29,6 +30,9 @@
             animation: none !important;
         }
 
+        /* ============================================================
+           GRID & CARD BLOG BASE STYLE
+           ============================================================ */
         .blog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -56,64 +60,70 @@
             border-color: #00f2fe;
         }
 
-        .thumb {
-            display: block;
-            width: 100%;
-            height: 200px;
-            aspect-ratio: 16 / 9;
-            background-color: rgba(255, 255, 255, 0.03);
-            overflow: hidden;
-        }
-
-        .blog-card-thumb {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
         .blog-toolbar {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             margin-bottom: 24px;
         }
 
+        /* ============================================================
+           KOLOM PENCARIAN & IKON PENCARI DI DALAM INPUT
+           ============================================================ */
         .blog-search-box {
             position: relative;
             flex: 1;
             min-width: 260px;
             max-width: 400px;
+            display: flex;
+            align-items: center;
         }
 
         .blog-search-box input {
             width: 100%;
-            padding: 10px 16px 10px 40px;
+            padding: 10px 16px 10px 42px;
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(0, 242, 254, 0.2);
             border-radius: 20px;
             color: inherit;
             font-size: 0.9rem;
             outline: none;
+            transition: border-color 0.2s ease;
         }
 
-        .blog-search-box i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            width: 18px;
-            height: 18px;
+        .blog-search-box input:focus {
+            border-color: #00f2fe;
         }
 
+        .blog-search-box i,
+        .blog-search-box svg,
+        .blog-search-box [data-lucide] {
+            position: absolute !important;
+            left: 14px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            color: #94a3b8 !important;
+            width: 18px !important;
+            height: 18px !important;
+            pointer-events: none;
+        }
+
+        /* ============================================================
+           CATEGORIES / CHIPS
+           ============================================================ */
         .blog-categories {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .blog-categories::-webkit-scrollbar {
+            display: none; /* Chrome & Safari */
         }
 
         .blog-chip {
@@ -125,6 +135,7 @@
             font-size: 0.82rem;
             cursor: pointer;
             white-space: nowrap;
+            transition: all 0.2s ease;
         }
 
         .blog-chip.active {
@@ -141,57 +152,60 @@
             flex-grow: 1;
         }
 
-        /* Efek placeholder halus saat gambar sedang dimuat */
-.thumb {
-    display: block;
-    width: 100%;
-    height: 200px;
-    aspect-ratio: 16 / 9;
-    background: rgba(255, 255, 255, 0.05); /* Latar belakang sementara */
-    overflow: hidden;
-}
+        /* ============================================================
+           IMAM / THUMBNAIL
+           ============================================================ */
+        .thumb {
+            display: block;
+            width: 100%;
+            height: 200px;
+            aspect-ratio: 16 / 9;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
 
-.blog-card-thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    opacity: 0;
-    animation: fadeInImg 0.3s ease-in-out forwards; /* Muncul mulus saat selesai load */
-}
+        .blog-card-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            animation: fadeInImg 0.3s ease-in-out forwards;
+        }
 
-@keyframes fadeInImg {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+        @keyframes fadeInImg {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-        /* Merapikan Meta Info (Ikon & Teks Sejajar Sempurna) */
-.blog-meta, #postMeta {
-    font-size: 0.82rem;
-    color: #00f2fe;
-    margin-bottom: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center; /* Menyejajarkan teks & ikon secara vertikal */
-    gap: 8px 12px;
-    line-height: 1;
-}
+        /* ============================================================
+           META INFO
+           ============================================================ */
+        .blog-meta, #postMeta {
+            font-size: 0.82rem;
+            color: #00f2fe;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+            line-height: 1;
+        }
 
-.blog-meta span, #postMeta span {
-    display: inline-flex;
-    align-items: center; /* Memastikan isi di dalam span berada di tengah */
-    gap: 5px;            /* Jarak antara ikon dan teks */
-}
+        .blog-meta span, #postMeta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-/* Memastikan ukuran ikon SVG konsisten dan presisi */
-.blog-meta svg, #postMeta svg,
-.blog-meta [data-lucide], #postMeta [data-lucide] {
-    width: 14px !important;
-    height: 14px !important;
-    display: inline-block;
-    vertical-align: middle;
-    flex-shrink: 0;
-}
+        .blog-meta svg, #postMeta svg,
+        .blog-meta [data-lucide], #postMeta [data-lucide] {
+            width: 14px !important;
+            height: 14px !important;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
 
         .blog-card-title {
             font-size: 1.15rem;
@@ -223,6 +237,9 @@
             text-decoration: none;
         }
 
+        /* ============================================================
+           DETAIL ARTIKEL
+           ============================================================ */
         .post-detail-wrapper {
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(0, 242, 254, 0.2);
@@ -264,7 +281,7 @@
         .post-prose h2 { font-size: 1.5rem; color: #00f2fe; }
         .post-prose h3 { font-size: 1.3rem; color: #f8fafc; }
         .post-prose h5 { font-size: 1.1rem; color: #38bdf8; }
-        .post-prose p { margin-bottom: 16px; }
+        .post-prose p { margin-bottom: 16px; word-break: break-word; }
 
         .post-tags {
             display: flex;
@@ -298,6 +315,91 @@
             padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
+        }
+
+        /* ============================================================
+           MEDIA QUERIES (CSS RESPONSIF HP & TABLET)
+           ============================================================ */
+        
+        /* 1. Tablet (Maksimal 768px) */
+        @media (max-width: 768px) {
+            .blog-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 16px;
+            }
+
+            .blog-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .blog-search-box {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .blog-categories {
+                width: 100%;
+            }
+
+            .post-detail-wrapper {
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            .post-prose h2 { font-size: 1.3rem; }
+            .post-prose h3 { font-size: 1.15rem; }
+        }
+
+        /* 2. Smartphone / HP (Maksimal 480px) */
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.4rem;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr; /* 1 Kartu per baris di HP */
+            }
+
+            .thumb {
+                height: 180px;
+            }
+
+            .blog-card-body {
+                padding: 16px;
+            }
+
+            .blog-card-title {
+                font-size: 1.05rem;
+            }
+
+            .blog-card-excerpt {
+                font-size: 0.85rem;
+            }
+
+            .post-detail-wrapper {
+                padding: 16px;
+            }
+
+            #postTitle {
+                font-size: 1.4rem !important;
+            }
+
+            .post-detail-cover {
+                max-height: 250px;
+                margin: 14px 0;
+            }
+
+            .pagination-container {
+                flex-direction: row;
+                gap: 6px;
+                font-size: 0.8rem;
+            }
+
+            .page-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
