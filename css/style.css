@@ -2975,3 +2975,18 @@ body, .glass-card, .navbar, .holo-card, .btn-glass, .spatial-window {
     animation: none !important;
     transition: none !important;
 }
+
+/* PAKSA MATIKAN EFEK ANIMASI PENYEBAB BERKEDIP KHUSUS DI BLOG */
+[data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+#homeView, #postView {
+    transition: none !important;
+}
+
+.blog-card {
+    will-change: transform;
+}
