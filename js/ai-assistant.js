@@ -2,17 +2,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("aiWidgetContainer");
     if (!container) return;
 
+    // 🔑 TEMPELKAN GEMINI API KEY KAMU DI SINI
+    const GEMINI_API_KEY = "AQ.Ab8RN6LvouacimckxnjOGWdDVDXJr5eCVAOk9qmKi4z__Yv0vg";
+
     let certificatesData = [];
     let videosData = [];
     let blogsData = [];
-    
-    // Fallback data manual jika file Excel belum dibuat/gagal dimuat
     let excelKnowledgeData = [
         { Keyword: "hobi, kegemaran, suka apa", Answer: "Hobi saya adalah koding, mengeksplorasi teknologi web modern, dan mendaki gunung." },
         { Keyword: "pengalaman, magang, kerja", Answer: "Saya memiliki pengalaman dalam pengembangan web front-end, pengelolaan server Linux, dan perancangan UI/UX." },
         { Keyword: "sosmed, instagram, github, linkedin", Answer: "Kamu bisa terhubung melalui akun GitHub dan LinkedIn resmi yang tertera di bagian footer website ini!" }
     ];
 
+    let lastTopicContext = "";
+    let interactionCount = parseInt(localStorage.getItem("ai_interaction_count") || "0");
     let isSpeechEnabled = false;
     const synth = window.speechSynthesis;
     let selectedVoice = null;
@@ -25,6 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (synth) {
         initVoices();
         if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = initVoices;
+    }
+
+    function getDynamicGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 3 && hour < 11) return "Selamat pagi 🌅";
+        if (hour >= 11 && hour < 15) return "Selamat siang ☀️";
+        if (hour >= 15 && hour < 18) return "Selamat sore 🌇";
+        return "Selamat malam 🌙";
+    }
+
+    function getDeveloperStatus() {
+        const hour = new Date().getHours();
+        if (hour >= 8 && hour < 22) return '<span class="status-online" style="color: #00e676;">● Online — Hybrid AI Active</span>';
+        return '<span style="color: #94a3b8;">○ Offline — Gemini Standby</span>';
     }
 
     async function loadExcelKnowledge() {
@@ -40,10 +57,10 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const sheetData = XLSX.utils.sheet_to_json(worksheet);
             if (sheetData && sheetData.length > 0) {
-                excelKnowledgeData = sheetData; // Menimpa dengan data dari Excel jika berhasil
+                excelKnowledgeData = sheetData;
             }
         } catch (error) {
-            console.log("Menggunakan database pengetahuan bawaan (Excel opsional).");
+            console.log("Menggunakan database pengetahuan bawaan.");
         }
     }
 
@@ -74,6 +91,38 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (match && match[1]) blogsData = eval(match[1]);
                 }
             } catch (e) {}
+        }
+    }
+
+    // 🚀 INTEGRASI GEMINI API
+    async function askGeminiAI(userPrompt) {
+        if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("PASTE_GEMINI")) {
+            return "Wah, obrolan yang menarik! Tapi kalau soal isi portofolio, kamu bisa pilih menu cepat di bawah ini atau tanya hal lain ya:";
+        }
+
+        const systemInstruction = "Kamu adalah Asisten AI ramah dari website portofolio interaktif milik Muhammad Zahril Fathan, mahasiswa Teknik Informatika di Universitas Nusa Putra. Jawablah pertanyaan pengunjung secara cerdas, ramah, dan ringkas dalam Bahasa Indonesia.";
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: systemInstruction },
+                            { text: userPrompt }
+                        ]
+                    }]
+                })
+            });
+
+            if (!response.ok) throw new Error("Gagal terhubung ke Gemini API");
+
+            const data = await response.json();
+            const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            return replyText || "Maaf, Gemini AI belum memberikan balasan.";
+        } catch (error) {
+            return "Wah, obrolan yang menarik! Tapi kalau soal isi portofolio, kamu bisa pilih menu cepat di bawah ini:";
         }
     }
 
@@ -130,6 +179,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             .ai-link-btn:hover { background: #38ef7d; transform: translateY(-1px); }
 
+            .ai-copy-btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: var(--text-dim, #94a3b8);
+                font-size: 10px;
+                padding: 3px 8px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 6px;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.2s;
+            }
+            .ai-copy-btn:hover { background: rgba(0, 242, 254, 0.2); color: #00f2fe; border-color: #00f2fe; }
+
             .ai-welcome-card { background: rgba(0, 242, 254, 0.04); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 14px; padding: 12px 14px; margin-bottom: 6px; backdrop-filter: blur(8px); }
             .ai-welcome-card p { margin: 0 0 10px 0; font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; }
             .ai-welcome-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--primary-color, #00f2fe); font-weight: 600; font-size: 0.88rem; }
@@ -161,8 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="ai-brand">
                     <div class="ai-avatar"><i data-lucide="sparkles"></i></div>
                     <div>
-                        <h4>Smart AI Agent v6.1</h4>
-                        <span class="status-online">Safe Knowledge Engine</span>
+                        <h4>Smart AI Agent v13.0</h4>
+                        ${getDeveloperStatus()}
                     </div>
                 </div>
                 <div class="ai-header-actions">
@@ -170,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <i data-lucide="volume-x" class="icon-speech-off"></i>
                         <i data-lucide="volume-2" class="icon-speech-on"></i>
                     </button>
-                    <button class="ai-icon-btn" id="aiClearChat" title="Hapus Obrolan">
+                    <button class="ai-icon-btn" id="aiClearChat" title="Hapus Riwayat">
                         <i data-lucide="trash-2"></i>
                     </button>
                     <button class="ai-close-btn" id="aiClose"><i data-lucide="x"></i></button>
@@ -182,21 +247,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="ai-welcome-card">
                         <div class="ai-welcome-header">
                             <i data-lucide="sparkles"></i>
-                            <span>Spatial AI Assistant Ready</span>
+                            <span>${getDynamicGreeting()}! Yuk Ngobrol Santai</span>
                         </div>
-                        <p>Halo! Saya AI Agent serbaguna. Tanya hobi, video, blog, sertifikat, atau informasi apapun secara interaktif:</p>
+                        <p>Selain tanya portofolio, kamu bisa ajak saya ngobrol santai, tanya kabar, atau ngobrol ringan:</p>
                         <div class="ai-suggestions">
-                            <button class="ai-chip" data-prompt="Apa hobimu?">
-                                <i data-lucide="smile"></i> Apa Hobimu?
+                            <button class="ai-chip" data-prompt="Halo, apa kabar?">
+                                <i data-lucide="smile"></i> Apa Kabar?
                             </button>
-                            <button class="ai-chip" data-prompt="Kuliah di mana?">
-                                <i data-lucide="graduation-cap"></i> Info Kuliah
+                            <button class="ai-chip" data-prompt="Lagi ngapain nih?">
+                                <i data-lucide="cpu"></i> Lagi Ngapain?
                             </button>
-                            <button class="ai-chip" data-prompt="Rekomendasikan proyek">
-                                <i data-lucide="folder"></i> Rekomendasi Proyek
+                            <button class="ai-chip" data-prompt="Cerita dong">
+                                <i data-lucide="message-square"></i> Cerita Dong
                             </button>
-                            <button class="ai-chip" data-prompt="Cari video algoritma">
-                                <i data-lucide="video"></i> Video Algoritma
+                            <button class="ai-chip" data-prompt="Terima kasih ya">
+                                <i data-lucide="heart"></i> Makasih Ya
                             </button>
                         </div>
                     </div>
@@ -204,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="ai-chat-footer">
-                <input type="text" id="aiInput" placeholder="Tanya sesuatu atau pilih opsi di atas..." autocomplete="off">
+                <input type="text" id="aiInput" placeholder="Ketik pertanyaan atau obrolan di sini..." autocomplete="off">
                 <button id="aiSend" class="btn-send"><i data-lucide="send"></i></button>
             </div>
         </div>
@@ -220,6 +285,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const aiBody = document.getElementById("aiBody");
     const aiVoiceToggle = document.getElementById("aiVoiceToggle");
     const aiClearChat = document.getElementById("aiClearChat");
+
+    function loadChatHistory() {
+        const savedHistory = localStorage.getItem("ai_chat_history_v13");
+        if (savedHistory) {
+            aiBody.innerHTML = savedHistory + `
+                <div style="text-align: center; margin: 8px 0;">
+                    <span style="font-size: 10px; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 10px; color: var(--text-dim);">Riwayat obrolan dipulihkan (${interactionCount} interaksi)</span>
+                </div>
+            `;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            aiBody.scrollTop = aiBody.scrollHeight;
+        }
+    }
+    loadChatHistory();
+
+    function saveChatHistory() {
+        const messages = aiBody.querySelectorAll(".ai-msg");
+        const historyArr = Array.from(messages).slice(-15).map(m => m.outerHTML).join("");
+        localStorage.setItem("ai_chat_history_v13", historyArr);
+        localStorage.setItem("ai_interaction_count", interactionCount);
+    }
 
     aiBtn.addEventListener("click", () => {
         aiWindow.classList.toggle("active");
@@ -240,13 +326,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     aiClearChat.addEventListener("click", () => {
         stopSpeech();
+        localStorage.removeItem("ai_chat_history_v13");
+        localStorage.removeItem("ai_interaction_count");
+        interactionCount = 0;
+        lastTopicContext = "";
         aiBody.innerHTML = `
             <div class="ai-msg bot">
-                Obrolan telah dibersihkan! Ada yang ingin Anda tanyakan lagi?
+                Obrolan diatur ulang. Mau ngobrolin apa lagi nih? 😊
                 <div class="ai-suggestions">
-                    <button class="ai-chip" data-prompt="Apa hobimu?">😊 Apa Hobimu?</button>
-                    <button class="ai-chip" data-prompt="Kuliah di mana?">🎓 Info Kuliah</button>
-                    <button class="ai-chip" data-prompt="Rekomendasikan proyek">🚀 Rekomendasi Proyek</button>
+                    <button class="ai-chip" data-prompt="Halo, apa kabar?">👋 Apa Kabar?</button>
+                    <button class="ai-chip" data-prompt="Lagi ngapain nih?">💻 Lagi Ngapain?</button>
+                    <button class="ai-chip" data-prompt="Cerita dong">📖 Cerita Dong</button>
                 </div>
             </div>
         `;
@@ -352,6 +442,38 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // 🌟 DATABASE OBROLAN SANTAI / SMALL TALK LOKAL
+    const smallTalkDatabase = [
+        {
+            keywords: ["halo", "hai", "hei", "pagi", "siang", "sore", "malam", "assalamualaikum"],
+            reply: "Halo juga! Senang bisa ngobrol denganmu hari ini. Ada yang bisa saya bantu atau mau ngobrolin apa nih? 😊"
+        },
+        {
+            keywords: ["apa kabar", "gimana kabarmu", "kabar", "sehat"],
+            reply: "Alhamdulillah saya sangat baik dan siap sedia membantu! Kamu sendiri gimana kabarnya? Semoga sehat selalu ya. 🌟"
+        },
+        {
+            keywords: ["lagi ngapain", "sibuk apa", "lagi apa", "kegiatanmu"],
+            reply: "Lagi stand-by di portofolio ini buat nemenin kamu keliling melihat karya-karya web development dan artikel keren! Kamu sendiri lagi santai atau sibuk apa nih?"
+        },
+        {
+            keywords: ["terima kasih", "makasih", "thanks", "thx"],
+            reply: "Sama-sama dengan senang hati! Kalau ada hal lain yang ingin ditanyakan atau didiskusikan, bilang saja ya. 👍"
+        },
+        {
+            keywords: ["siapa kamu", "nama kamu siapa", "kamu bot", "kamu siapa"],
+            reply: "Saya adalah Asisten AI virtual interaktif di portofolio Muhammad Zahril Fathan. Saya dirancang untuk membantumu menjelajahi website ini sekaligus teman ngobrol yang seru!"
+        },
+        {
+            keywords: ["cerita", "dongeng", "hiburan", "lucu"],
+            reply: "Cerita apa ya? Hmm... tahukah kamu kalau membuat kode program itu mirip merakit LEGO? Setiap baris kodenya disusun rapi hingga membentuk sebuah aplikasi web yang canggih dan interaktif seperti portofolio ini! 🚀"
+        },
+        {
+            keywords: ["dadah", "sampai jumpa", "bye", "selamat tinggal"],
+            reply: "Sampai jumpa lagi! Jangan lupa mampir-mampir lagi ke portofolio ini ya. Have a nice day! 👋"
+        }
+    ];
+
     const siteActions = [
         {
             keywords: ["rekomendasikan proyek", "pilihkan proyek", "proyek mana"],
@@ -373,7 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
             reply: "Trilogi Nusa Putra terdiri dari 3 nilai luhur:<br>1. **Amor Deus**: Cinta kasih kepada Tuhan.<br>2. **Amor Parentium**: Cinta kasih kepada Orang Tua/Guru.<br>3. **Amor Conservis**: Cinta kasih kepada sesama manusia."
         },
         {
-            keywords: ["siapa namamu", "siapa kamu", "siapa fathan", "biodata"],
+            keywords: ["siapa namamu", "siapa fathan", "biodata"],
             reply: "Website ini merupakan portofolio interaktif karya **Muhammad Zahril Fathan** — Mahasiswa Teknik Informatika Universitas Nusa Putra."
         },
         {
@@ -453,23 +575,83 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function processQuery(query) {
-        const input = query.toLowerCase().trim();
+        let input = query.toLowerCase().trim();
         await ensureGlobalDataLoaded();
+        interactionCount++;
 
-        // 1. CEK DARI DATABASE PENGETAHUAN (EXCEL / FALLBACK)
-        if (excelKnowledgeData && excelKnowledgeData.length > 0) {
-            for (let row of excelKnowledgeData) {
-                if (row.Keyword) {
-                    const keys = row.Keyword.toLowerCase().split(",");
-                    if (keys.some(k => input.includes(k.trim()))) {
-                        return { text: row.Answer || "Informasi ditemukan." };
-                    }
-                }
+        let sentimentPrefix = "";
+        if (input.includes("keren") || input.includes("mantap") || input.includes("hebat") || input.includes("bagus") || input.includes("terima kasih")) {
+            sentimentPrefix = "Terima kasih banyak atas apresiasinya! 😊 ";
+        } else if (input.includes("jelek") || input.includes("bug") || input.includes("error") || input.includes("payah")) {
+            sentimentPrefix = "Mohon maaf atas ketidaknyamanannya, masukan ini sangat berharga. 🙏 ";
+        }
+
+        // 🧠 KONTEKS BERLANJUT (Multi-Turn Chat Context)
+        if ((input === "di mana?" || input === "dimana?" || input === "kenapa?" || input === "bagaimana?") && lastTopicContext) {
+            input = lastTopicContext + " " + input;
+        }
+
+        // 1. CEK OBROLAN SANTAI LOKAL
+        for (let item of smallTalkDatabase) {
+            if (item.keywords.some(k => input.includes(k))) {
+                lastTopicContext = "smalltalk";
+                return {
+                    text: sentimentPrefix + item.reply,
+                    customHTML: `
+                        <div class="ai-suggestions" style="margin-top:8px;">
+                            <button class="ai-chip" data-prompt="Apa hobimu?">😊 Apa Hobimu?</button>
+                            <button class="ai-chip" data-prompt="Rekomendasikan proyek">🚀 Lihat Proyek</button>
+                        </div>
+                    `
+                };
             }
         }
 
-        // 2. PENCARIAN VIDEO
+        // 2. CEK KNOWLEDGE BASE EXCEL DENGAN PENILAIAN SKOR
+        if (excelKnowledgeData && excelKnowledgeData.length > 0) {
+            let bestMatch = null;
+            let highestScore = 0;
+            let matchedTopic = "";
+
+            for (let row of excelKnowledgeData) {
+                const keywordVal = row.Keyword || row.keyword || row.KataKunci || row.Pertanyaan || Object.values(row)[0] || "";
+                const answerVal = row.Answer || row.answer || row.Jawaban || row.Isi || Object.values(row)[1] || "";
+
+                if (keywordVal) {
+                    const keys = String(keywordVal).toLowerCase().split(",");
+                    let score = 0;
+                    keys.forEach(k => {
+                        const cleanK = k.trim();
+                        if (input.includes(cleanK) || cleanK.includes(input)) {
+                            score += cleanK.length;
+                        }
+                    });
+
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestMatch = String(answerVal);
+                        matchedTopic = keys[0];
+                    }
+                }
+            }
+
+            if (bestMatch && highestScore > 1) {
+                lastTopicContext = matchedTopic;
+                return { 
+                    text: sentimentPrefix + bestMatch,
+                    customHTML: `
+                        <div class="ai-suggestions" style="margin-top:8px;">
+                            <button class="ai-chip" data-prompt="Rekomendasikan proyek">🚀 Lihat Proyek</button>
+                            <button class="ai-chip" data-prompt="Tampilkan sertifikat">🏆 Lihat Sertifikat</button>
+                        </div>
+                    `
+                };
+            }
+        }
+
+        // 3. PENCARIAN VIDEO
         if (input.includes("video")) {
+            lastTopicContext = "video";
             const foundVideos = searchVideos(input);
             if (foundVideos.length > 0) {
                 const videoListHTML = foundVideos.map(v => {
@@ -486,14 +668,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }).join("");
 
                 return {
-                    text: `Ditemukan **${foundVideos.length} video** yang relevan:`,
+                    text: `Ditemukan **${foundVideos.length} video** relevan:`,
                     customHTML: videoListHTML
                 };
             }
         }
 
-        // 3. PENCARIAN BLOG / ARTIKEL
+        // 4. PENCARIAN BLOG / ARTIKEL
         if (input.includes("artikel") || input.includes("blog") || input.includes("voip") || input.includes("linux")) {
+            lastTopicContext = "artikel";
             const foundBlogs = searchBlogs(input);
             if (foundBlogs.length > 0) {
                 const blogListHTML = foundBlogs.map(b => `
@@ -508,14 +691,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 `).join("");
 
                 return {
-                    text: `Ditemukan **${foundBlogs.length} artikel blog** yang cocok:`,
+                    text: `Ditemukan **${foundBlogs.length} artikel** blog:`,
                     customHTML: blogListHTML
                 };
             }
         }
 
-        // 4. PENCARIAN SERTIFIKAT
+        // 5. PENCARIAN SERTIFIKAT
         if (input.includes("sertifikat")) {
+            lastTopicContext = "sertifikat";
             const certs = await fetchCertificatesFromPage();
             const stopWords = ["cari", "sertifikat", "tampilkan", "tentang", "ada"];
             const keywords = cleanQuery(input, stopWords);
@@ -533,31 +717,29 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 5. SITE ACTIONS & PERCAKAPAN
+        // 6. SITE ACTIONS & NAVIGASI HALAMAN
         for (let item of siteActions) {
             if (item.keywords.some(k => input.includes(k))) {
+                lastTopicContext = item.keywords[0];
                 return {
-                    text: item.reply || "",
+                    text: sentimentPrefix + (item.reply || ""),
                     customHTML: item.customHTML || "",
                     action: item.action || null
                 };
             }
         }
 
-        // 6. SCRAPING ISI HALAMAN (FALLBACK)
-        const sections = document.querySelectorAll("section, .about-card, .project-card, article, .video-card");
-        for (let sec of sections) {
-            const text = sec.textContent.replace(/\s+/g, ' ').trim();
-            const words = input.split(" ").filter(w => w.length > 2);
-            if (words.some(w => text.toLowerCase().includes(w))) {
-                const sentences = text.split(". ");
-                const matched = sentences.find(s => words.some(w => s.toLowerCase().includes(w)));
-                if (matched) return { text: `Berdasarkan halaman ini: "${matched.trim()}."` };
-            }
-        }
-
+        // 7. GEMINI API FALLBACK (Jika Tidak Ada Match Lokal Sama Sekali)
+        const geminiText = await askGeminiAI(query);
         return {
-            text: "Maaf, saya belum menemukan jawaban yang tepat. Coba tanyakan hal seperti: 'apa hobimu', 'kuliah di mana', 'cari video algoritma', atau 'ke sertifikat'."
+            text: sentimentPrefix + geminiText,
+            customHTML: `
+                <div class="ai-suggestions" style="margin-top:8px;">
+                    <button class="ai-chip" data-prompt="Apa hobimu?">😊 Apa Hobimu?</button>
+                    <button class="ai-chip" data-prompt="Rekomendasikan proyek">🚀 Rekomendasi Proyek</button>
+                    <button class="ai-chip" data-prompt="Tampilkan sertifikat">🏆 Lihat Sertifikat</button>
+                </div>
+            `
         };
     }
 
@@ -586,7 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const plainText = tempDiv.textContent || tempDiv.innerText || "";
 
         let charIndex = 0;
-        const typingSpeed = 20;
+        const typingSpeed = 15;
 
         function typeNextChar() {
             if (charIndex < plainText.length) {
@@ -595,9 +777,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 aiBody.scrollTop = aiBody.scrollHeight;
                 setTimeout(typeNextChar, typingSpeed);
             } else {
-                div.innerHTML = textHTML + customHTML;
+                const copyBtnHTML = `<br><button class="ai-copy-btn" data-copy-text="${plainText.replace(/"/g, '&quot;')}"><i data-lucide="copy" style="width:12px;height:12px;"></i> Salin Teks</button>`;
+                div.innerHTML = textHTML + customHTML + copyBtnHTML;
                 aiBody.scrollTop = aiBody.scrollHeight;
                 if (typeof lucide !== 'undefined') lucide.createIcons();
+                saveChatHistory();
                 if (onComplete) onComplete();
             }
         }
@@ -610,22 +794,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!text) return;
 
         appendMsg(text, "user");
+        saveChatHistory();
         if (!customText) aiInput.value = "";
 
         showTypingIndicator();
 
-        setTimeout(async () => {
-            const result = await processQuery(text);
-            removeTypingIndicator();
+        const result = await processQuery(text);
+        removeTypingIndicator();
 
-            const safeText = result.text || "Baik, ini informasinya:";
-            const customHTML = result.customHTML || "";
-            
-            appendBotMsgWithTyping(safeText, customHTML, () => {
-                speakText(safeText);
-                if (result.action) setTimeout(() => result.action(), 500);
-            });
-        }, 500);
+        const safeText = result.text || "Baik, ini informasinya:";
+        const customHTML = result.customHTML || "";
+        
+        appendBotMsgWithTyping(safeText, customHTML, () => {
+            speakText(safeText);
+            if (result.action) setTimeout(() => result.action(), 500);
+        });
     }
 
     aiSend.addEventListener("click", () => handleSend());
@@ -642,6 +825,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     aiBody.addEventListener("click", (e) => {
+        const copyBtn = e.target.closest(".ai-copy-btn");
+        if (copyBtn) {
+            const textToCopy = copyBtn.getAttribute("data-copy-text");
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = `<i data-lucide="check" style="width:12px;height:12px;color:#00e676;"></i> Tersalin!`;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 2000);
+            });
+            return;
+        }
+
         if (e.target.classList.contains("ai-chip")) {
             const prompt = e.target.getAttribute("data-prompt");
             if (prompt) handleSend(prompt);
@@ -774,21 +972,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTapTime;
 
-            if (isHeader || (tapLength < 350 && tapLength > 0)) {
-                if (e.target.tagName === 'INPUT' && !isHeader) return;
-                const touch = e.touches[0];
-                startDrag(touch.clientX, touch.clientY, popup);
-                lastTapTime = 0;
-            } else {
-                lastTapTime = currentTime;
-            }
+            (isHeader || (tapLength < 350 && tapLength > 0)) ? startDrag(e.touches[0].clientX, e.touches[0].clientY, popup) : null;
         });
 
         document.addEventListener("touchmove", (e) => {
             if (isDragging) {
                 e.preventDefault();
-                const touch = e.touches[0];
-                updatePosition(touch.clientX, touch.clientY);
+                updatePosition(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: false });
 
